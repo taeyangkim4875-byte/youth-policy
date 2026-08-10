@@ -1,69 +1,226 @@
-import Image from "next/image";
+import MatchingForm from '@/components/MatchingForm';
+import { WebAppJsonLd, FaqJsonLd } from '@/components/JsonLd';
+import { fetchAllPolicies } from '@/lib/supabase';
+import type { Policy } from '@/lib/types';
+import Link from 'next/link';
 
-export default function Home() {
+async function getPolicies(): Promise<Policy[]> {
+  const policies = await fetchAllPolicies();
+  if (policies.length > 0) return policies;
+  return getSamplePolicies();
+}
+
+function getSamplePolicies(): Policy[] {
+  return [
+    {
+      id: 'sample-1',
+      api_id: 'R2024010100001',
+      name: '서울시 청년월세 특별지원',
+      summary: '서울 거주 청년에게 월세를 지원하여 주거비 부담을 경감합니다.',
+      category: '주거',
+      subcategory: '월세지원',
+      min_age: 19,
+      max_age: 39,
+      regions: ['서울특별시'],
+      income_pct: 150,
+      employment: ['미취업', '재직', '재학', '창업'],
+      housing_req: '무주택',
+      education: null,
+      marriage: null,
+      benefit: '월 최대 20만 원, 최대 12개월 지원',
+      how_to_apply: '서울주거포털 온라인 신청 또는 주민센터 방문',
+      apply_start: '2026-03-01',
+      apply_end: '2026-12-31',
+      apply_url: 'https://housing.seoul.go.kr',
+      org_name: '서울특별시',
+      status: 'active',
+      needs_review: false,
+      raw_eligibility: '만 19~39세, 서울 거주, 무주택, 중위소득 150% 이하',
+      source_url: 'https://www.youthcenter.go.kr',
+      fetched_at: '2026-08-05T00:00:00Z',
+      created_at: '2026-08-05T00:00:00Z',
+      updated_at: '2026-08-05T00:00:00Z',
+    },
+    {
+      id: 'sample-2',
+      api_id: 'R2024010100002',
+      name: '청년도약계좌',
+      summary: '매월 70만 원 한도 내 자유 적립, 정부 기여금과 비과세 혜택으로 목돈 마련을 지원합니다.',
+      category: '금융·자산',
+      subcategory: '저축지원',
+      min_age: 19,
+      max_age: 34,
+      regions: ['전국'],
+      income_pct: 200,
+      employment: ['재직', '미취업', '재학', '창업'],
+      housing_req: null,
+      education: null,
+      marriage: null,
+      benefit: '정부 기여금 월 최대 3.3만 원 + 이자소득 비과세',
+      how_to_apply: '시중 은행 앱 또는 영업점 방문 가입',
+      apply_start: '2026-01-01',
+      apply_end: '2026-12-31',
+      apply_url: 'https://www.kinfa.or.kr',
+      org_name: '서민금융진흥원',
+      status: 'active',
+      needs_review: false,
+      raw_eligibility: '만 19~34세, 개인소득 7,500만 원 이하, 가구소득 중위 180% 이하',
+      source_url: 'https://www.youthcenter.go.kr',
+      fetched_at: '2026-08-05T00:00:00Z',
+      created_at: '2026-08-05T00:00:00Z',
+      updated_at: '2026-08-05T00:00:00Z',
+    },
+    {
+      id: 'sample-3',
+      api_id: 'R2024010100003',
+      name: '청년 전세임대주택',
+      summary: '무주택 청년에게 전세 보증금을 저렴하게 지원하여 안정적인 주거를 돕습니다.',
+      category: '주거',
+      subcategory: '전세지원',
+      min_age: 19,
+      max_age: 39,
+      regions: ['전국'],
+      income_pct: 100,
+      employment: ['미취업', '재직', '재학', '창업'],
+      housing_req: '무주택',
+      education: null,
+      marriage: null,
+      benefit: '전세 보증금 수도권 1.2억 원, 지방 8천만 원 한도 지원 (저리 대출)',
+      how_to_apply: 'LH 마이홈 온라인 신청',
+      apply_start: '2026-02-01',
+      apply_end: '2026-11-30',
+      apply_url: 'https://www.myhome.go.kr',
+      org_name: '한국토지주택공사(LH)',
+      status: 'active',
+      needs_review: false,
+      raw_eligibility: '만 19~39세, 무주택, 중위소득 100% 이하',
+      source_url: 'https://www.youthcenter.go.kr',
+      fetched_at: '2026-08-05T00:00:00Z',
+      created_at: '2026-08-05T00:00:00Z',
+      updated_at: '2026-08-05T00:00:00Z',
+    },
+    {
+      id: 'sample-4',
+      api_id: 'R2024010100004',
+      name: '서울시 이사비 지원',
+      summary: '서울 거주 청년의 이사 비용을 지원합니다.',
+      category: '주거',
+      subcategory: '이사비',
+      min_age: 19,
+      max_age: 39,
+      regions: ['서울특별시'],
+      income_pct: 150,
+      employment: ['미취업', '재직', '재학', '창업'],
+      housing_req: '무주택',
+      education: null,
+      marriage: null,
+      benefit: '이사비 최대 40만 원 1회 지원',
+      how_to_apply: '서울주거포털 온라인 신청',
+      apply_start: '2026-04-01',
+      apply_end: '2026-10-31',
+      apply_url: 'https://housing.seoul.go.kr',
+      org_name: '서울특별시',
+      status: 'active',
+      needs_review: false,
+      raw_eligibility: '만 19~39세, 서울 거주, 무주택, 중위소득 150% 이하',
+      source_url: 'https://www.youthcenter.go.kr',
+      fetched_at: '2026-08-05T00:00:00Z',
+      created_at: '2026-08-05T00:00:00Z',
+      updated_at: '2026-08-05T00:00:00Z',
+    },
+    {
+      id: 'sample-5',
+      api_id: 'R2024010100005',
+      name: '청년미래적금',
+      summary: '청년도약계좌를 대체하는 새로운 정책형 적금으로 더 높은 수익률을 제공합니다.',
+      category: '금융·자산',
+      subcategory: '저축지원',
+      min_age: 19,
+      max_age: 34,
+      regions: ['전국'],
+      income_pct: 200,
+      employment: ['재직', '미취업', '재학', '창업'],
+      housing_req: null,
+      education: null,
+      marriage: null,
+      benefit: '정부 기여금 + 우대금리, 5년 만기 시 목돈 마련',
+      how_to_apply: '시중 은행 앱 가입',
+      apply_start: '2026-06-01',
+      apply_end: '2026-12-31',
+      apply_url: 'https://www.kinfa.or.kr',
+      org_name: '서민금융진흥원',
+      status: 'active',
+      needs_review: false,
+      raw_eligibility: '만 19~34세, 개인소득 7,500만 원 이하',
+      source_url: 'https://www.youthcenter.go.kr',
+      fetched_at: '2026-08-05T00:00:00Z',
+      created_at: '2026-08-05T00:00:00Z',
+      updated_at: '2026-08-05T00:00:00Z',
+    },
+  ];
+}
+
+export default async function HomePage() {
+  const policies = await getPolicies();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <WebAppJsonLd />
+      <FaqJsonLd
+        items={[
+          {
+            q: '청년정책 매칭은 무료인가요?',
+            a: '네, 완전히 무료입니다. 회원가입 없이 조건만 입력하면 바로 결과를 확인할 수 있습니다.',
+          },
+          {
+            q: '입력한 개인정보는 저장되나요?',
+            a: '아닙니다. 모든 매칭은 브라우저에서 처리되며, 입력한 조건은 서버에 전송되거나 저장되지 않습니다.',
+          },
+          {
+            q: '매칭 결과가 곧 신청 자격을 보장하나요?',
+            a: '아닙니다. 매칭 결과는 참고용이며, 최종 자격 확인과 신청은 각 정책의 공식 사이트에서 해야 합니다.',
+          },
+        ]}
+      />
+
+      <div className="mb-5">
+        <h1 className="text-[22px] font-extrabold leading-tight">
+          내가 받을 수 있는<br /><span className="text-primary">청년정책</span>, 한눈에
+        </h1>
+        <p className="text-[13px] text-muted mt-1.5">
+          분야별로 둘러보거나, 내 조건을 입력해 맞춤 정책을 찾아보세요.
+        </p>
+      </div>
+
+      <MatchingForm policies={policies} />
+
+      <div className="mt-5 space-y-2">
+        <Link
+          href="/guide/housing"
+          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+        >
+          <span className="text-[13px] font-bold text-text">
+            🏠 청년 주거정책, 직접 받아본 후기와 신청 팁
+          </span>
+          <p className="text-[11px] text-muted mt-0.5">
+            월세 지원 200만 원, 이사비 20만 원 — 실제 수령 경험담
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        </Link>
+
+        <a
+          href="https://moduncalc.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+        >
+          <span className="text-[13px] font-bold text-text">
+            🧮 연봉 실수령액, 적금 이자, 대출 이자 계산기
+          </span>
+          <p className="text-[11px] text-muted mt-0.5">
+            moduncalc.com — 82종 무료 계산기 모음
+          </p>
+        </a>
+      </div>
+    </>
   );
 }
