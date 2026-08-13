@@ -8,7 +8,9 @@ const NAV = [
   { label: '정책 매칭', href: '/' },
   { label: '정책 목록', href: '/policies' },
   { label: '주거 가이드', href: '/guide/housing' },
-  { label: '소개', href: '/about' },
+  { label: '서울 조합', href: '/guide/seoul' },
+  { label: '적금 비교', href: '/guide/finance' },
+  { label: '용어 사전', href: '/guide/terms' },
 ];
 
 export default function Header() {

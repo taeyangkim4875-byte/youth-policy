@@ -196,6 +196,18 @@ export default async function HomePage() {
 
       <div className="mt-5 space-y-2">
         <Link
+          href="/guide/seoul"
+          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+        >
+          <span className="text-[13px] font-bold text-text">
+            🏙️ 서울 청년이면 이거 다 받아 — 연 최대 500만 원
+          </span>
+          <p className="text-[11px] text-muted mt-0.5">
+            동시에 받을 수 있는 정책 조합 · 실제 수령 경험 기반
+          </p>
+        </Link>
+
+        <Link
           href="/guide/housing"
           className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
         >
@@ -204,6 +216,30 @@ export default async function HomePage() {
           </span>
           <p className="text-[11px] text-muted mt-0.5">
             월세 지원 200만 원, 이사비 20만 원 — 실제 수령 경험담
+          </p>
+        </Link>
+
+        <Link
+          href="/guide/finance"
+          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+        >
+          <span className="text-[13px] font-bold text-text">
+            💰 청년도약계좌 vs 청년미래적금 — 뭐가 유리할까?
+          </span>
+          <p className="text-[11px] text-muted mt-0.5">
+            3년 유지하다 갈아탄 실제 경험 · 만기 시뮬레이션
+          </p>
+        </Link>
+
+        <Link
+          href="/guide/terms"
+          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+        >
+          <span className="text-[13px] font-bold text-text">
+            📖 중위소득? 무주택? 정책 용어 쉽게 풀기
+          </span>
+          <p className="text-[11px] text-muted mt-0.5">
+            2026년 중위소득표 포함 · 헷갈리는 용어 9개 정리
           </p>
         </Link>
 
