@@ -4,11 +4,11 @@ import { FaqJsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: '취준생이 받을 수 있는 지원금 총정리 (2025년 최신) | 청년정책 매칭',
+  title: '취준생이 받을 수 있는 지원금 총정리 (2026년 최신) | 청년정책 매칭',
   description:
     '취업 준비 중에도 월 50만원 구직촉진수당, 청년월세 지원, 취업활동비까지 받을 수 있어요. 취준생이 놓치기 쉬운 정부 지원금을 신청 순서와 함께 정리했습니다.',
   openGraph: {
-    title: '취준생이 받을 수 있는 지원금 총정리 (2025년 최신)',
+    title: '취준생이 받을 수 있는 지원금 총정리 (2026년 최신)',
     description:
       '취업 준비 중에도 월 50만원 구직촉진수당, 청년월세 지원, 취업활동비까지 받을 수 있어요.',
     url: 'https://youth.moduncalc.com/guide/job-seeker',
@@ -50,7 +50,7 @@ export default function JobSeekerGuidePage() {
           <h1 className="text-[22px] font-extrabold text-text leading-snug mb-3">
             취준생이 받을 수 있는 지원금 총정리
           </h1>
-          <p className="text-[12px] text-muted">최종 업데이트: 2025년 기준 · 작성자: 김태양</p>
+          <p className="text-[12px] text-muted">최종 업데이트: 2026년 기준 · 작성자: 김태양</p>
 
           <div className="mt-4 p-4 bg-primary-bg rounded-[var(--radius)] border border-line">
             <p className="text-[12px] text-text leading-relaxed">

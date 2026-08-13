@@ -42,7 +42,7 @@ export default function ApplyExperiencePage() {
 
         {/* 히어로 */}
         <section className="mb-8">
-          <p className="text-[13px] text-muted mb-2">2025년 실제 경험 · 김태양</p>
+          <p className="text-[13px] text-muted mb-2">2026년 실제 경험 · 김태양</p>
           <h1 className="text-[22px] font-extrabold text-text leading-tight mb-3">
             5개 청년정책에 직접 신청해봤습니다
           </h1>
@@ -493,7 +493,7 @@ export default function ApplyExperiencePage() {
               → 내 조건에 맞는 청년정책 찾는 법 (체크리스트)
             </Link>
             <Link
-              href="/guide/documents"
+              href="/guide/checklist"
               className="block text-[12px] text-primary hover:underline"
             >
               → 청년정책 신청 시 자주 쓰이는 서류 총정리
@@ -517,7 +517,7 @@ export default function ApplyExperiencePage() {
             따라 결과가 다를 수 있습니다.
           </p>
           <p className="text-[11px] text-muted mt-2">
-            최종 업데이트: 2025년 · 작성자: 김태양
+            최종 업데이트: 2026년 · 작성자: 김태양
           </p>
         </footer>
       </main>

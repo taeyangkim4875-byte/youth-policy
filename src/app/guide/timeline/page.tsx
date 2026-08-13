@@ -292,7 +292,7 @@ export default function TimelineGuidePage() {
           <div className="p-3 bg-surface border border-line2 rounded-[var(--radius)]">
             <p className="text-[12px] font-bold text-text mb-0.5">청년도약계좌</p>
             <p className="text-[11px] text-muted">
-              매달 신청 창구 운영. 소득 기준 충족 시 정부 기여금 최대 월 2.4만 원.
+              매달 신청 창구 운영. 소득 기준 충족 시 정부 기여금 최대 월 3.3만 원.
             </p>
           </div>
         </div>
