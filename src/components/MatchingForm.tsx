@@ -31,14 +31,54 @@ const chipCls = (on: boolean) =>
   }`;
 
 function formatMoney(amount: number): string {
-  if (amount >= 100000000) return `${(amount / 100000000).toFixed(1).replace(/\.0$/, '')}억`;
   if (amount >= 10000) return `${Math.round(amount / 10000)}만`;
   return `${amount.toLocaleString()}`;
+}
+
+// 정책의 연간 실질 혜택 금액 추정 (만원 단위)
+function annualBenefit(p: Policy): number {
+  // 대출은 혜택금이 아님
+  if (p.benefit_type === 'loan') return 0;
+
+  // benefit_total이 연 1,200만원(월 100만) 초과면 대출/보증금일 가능성 높음 → 제외
+  if (p.benefit_total && p.benefit_total > 12000000) return 0;
+
+  if (p.benefit_monthly) {
+    const months = p.benefit_duration || 12;
+    const annual = p.benefit_monthly * Math.min(months, 12);
+    // 월 100만원 초과는 비현실적 → 제외
+    if (p.benefit_monthly > 1000000) return 0;
+    return annual;
+  }
+
+  if (p.benefit_total) {
+    // 1회성 지원금은 그대로 (연간 기준)
+    return p.benefit_total;
+  }
+
+  return 0;
+}
+
+// 정책 정렬: 실질 혜택 큰 순 → 마감 임박 우선
+function sortPolicies(policies: Policy[]): Policy[] {
+  const now = Date.now();
+  return [...policies].sort((a, b) => {
+    // 1) 실질 혜택 금액 큰 순
+    const aAmt = annualBenefit(a);
+    const bAmt = annualBenefit(b);
+    if (bAmt !== aAmt) return bAmt - aAmt;
+
+    // 2) 마감 임박 우선
+    const aEnd = a.apply_end ? new Date(a.apply_end).getTime() - now : Infinity;
+    const bEnd = b.apply_end ? new Date(b.apply_end).getTime() - now : Infinity;
+    return aEnd - bEnd;
+  });
 }
 
 function calcBenefitSummary(policies: Policy[]) {
   let totalMax = 0;
   let countWithAmount = 0;
+  let countLoan = 0;
   let countUnknown = 0;
   let deadlineSoonTotal = 0;
   let deadlineSoonCount = 0;
@@ -46,16 +86,12 @@ function calcBenefitSummary(policies: Policy[]) {
   const thirtyDays = 30 * 86400000;
 
   for (const p of policies) {
-    if (p.benefit_unknown || p.benefit_type === 'loan') {
-      countUnknown++;
+    const amount = annualBenefit(p);
+
+    if (p.benefit_type === 'loan') {
+      countLoan++;
       continue;
     }
-
-    const amount = p.benefit_total || (p.benefit_monthly && p.benefit_duration
-      ? p.benefit_monthly * p.benefit_duration
-      : p.benefit_monthly
-        ? p.benefit_monthly * 12
-        : 0);
 
     if (amount > 0) {
       totalMax += amount;
@@ -73,7 +109,7 @@ function calcBenefitSummary(policies: Policy[]) {
     }
   }
 
-  return { totalMax, countWithAmount, countUnknown, deadlineSoonTotal, deadlineSoonCount };
+  return { totalMax, countWithAmount, countLoan, countUnknown, deadlineSoonTotal, deadlineSoonCount };
 }
 
 export default function MatchingForm({ policies }: { policies: Policy[] }) {
@@ -94,7 +130,7 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
     const cond: UserCondition = {
       birthYear, sido, sigungu, employment, incomePct,
     };
-    return matchPolicies(policies, cond);
+    return sortPolicies(matchPolicies(policies, cond));
   }, [submitted, birthYear, sido, sigungu, employment, incomePct, policies, canSubmit]);
 
   const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
@@ -193,28 +229,44 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
       {/* 매칭 결과 */}
       {submitted && (
         <div className="mt-3">
-          {/* "놓친 돈" 요약 카드 */}
-          {matchResults.length > 0 && summary.totalMax > 0 && (
+          {/* 결과 요약 카드 */}
+          {matchResults.length > 0 && (
             <div className="bg-primary text-white rounded-[var(--radius)] p-4 mb-3">
-              <p className="text-[12px] font-semibold opacity-80 mb-1">받을 수 있는 최대 예상 지원 규모</p>
-              <p className="text-[28px] font-extrabold leading-tight">
-                연 최대 {formatMoney(summary.totalMax)}원
+              <p className="text-[12px] font-semibold opacity-80 mb-1">
+                매칭된 정책 <span className="font-extrabold">{matchResults.length}건</span>
               </p>
-              <div className="flex items-center gap-3 mt-2 text-[12px] font-medium opacity-90">
-                <span>매칭 {matchResults.length}건</span>
-                <span>금액 확인 {summary.countWithAmount}건</span>
+
+              {summary.countWithAmount > 0 ? (
+                <>
+                  <p className="text-[12px] opacity-80 mt-1">
+                    금액 확인된 {summary.countWithAmount}건 기준
+                  </p>
+                  <p className="text-[28px] font-extrabold leading-tight">
+                    연 최대 약 {formatMoney(summary.totalMax)}원
+                  </p>
+                </>
+              ) : (
+                <p className="text-[16px] font-extrabold leading-tight mt-1">
+                  상세 금액은 각 정책을 확인하세요
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[11px] font-medium opacity-80">
                 {summary.countUnknown > 0 && <span>금액 미정 {summary.countUnknown}건</span>}
+                {summary.countLoan > 0 && <span>대출/보증 {summary.countLoan}건 (금액 미포함)</span>}
               </div>
+
               {summary.deadlineSoonCount > 0 && (
                 <div className="mt-3 bg-white/15 rounded-lg p-2.5">
                   <p className="text-[12px] font-bold">
-                    이번 달 마감 임박 {summary.deadlineSoonCount}건 · {formatMoney(summary.deadlineSoonTotal)}원
+                    30일 내 마감 {summary.deadlineSoonCount}건 · {formatMoney(summary.deadlineSoonTotal)}원
                   </p>
                   <p className="text-[11px] opacity-80 mt-0.5">놓치면 다음 모집까지 기다려야 해요</p>
                 </div>
               )}
-              <p className="text-[10px] opacity-60 mt-2">
-                * 정책별 최대 금액 기준 단순 합산이며, 중복 수혜 제한·개인 조건에 따라 실제 수령액은 다를 수 있습니다.
+
+              <p className="text-[10px] opacity-50 mt-2">
+                * 대출·보증 상품은 금액에서 제외했습니다. 정책별 최대 금액 기준 단순 합산이며, 중복 수혜 제한·개인 조건에 따라 실제 수령액은 다릅니다.
               </p>
             </div>
           )}
