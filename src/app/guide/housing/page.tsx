@@ -39,8 +39,8 @@ export default function HousingGuidePage() {
             a: '서울시 이사비 지원은 1회 최대 40만 원입니다. 저는 20만 원을 수령했으며 선착순이므로 신청 시기를 놓치지 않는 것이 중요합니다.',
           },
           {
-            q: '청년도약계좌에서 청년미래적금으로 갈아타는 게 나은가요?',
-            a: '개인 상황에 따라 다르지만, 저는 3년간 청년도약계좌(월 70만 원, 정부기여금 2.5만 원)를 유지한 후 만기 목돈을 계산했을 때 청년미래적금이 더 유리해서 갈아탔습니다.',
+            q: '청년도약계좌에서 청년미래적금으로 갈아타도 되나요?',
+            a: '저는 종료 전에 갈아탔지만, 2026년 8월 6일부로 갈아타기는 종료되었습니다. 이제는 도약계좌 유지 또는 미래적금 새로 가입만 가능합니다.',
           },
         ]}
       />
@@ -128,7 +128,7 @@ export default function HousingGuidePage() {
 
       <Card>
         <h2 className="text-lg font-bold mb-3">
-          청년도약계좌 → 청년미래적금 갈아탄 이유
+          청년도약계좌 → 청년미래적금 갈아탄 경험
         </h2>
         <p className="text-sm text-text leading-relaxed mb-3">
           주거정책은 아니지만 목돈 마련과 직결되는 금융 정책도
@@ -137,23 +137,13 @@ export default function HousingGuidePage() {
           받았습니다.
         </p>
         <p className="text-sm text-text leading-relaxed mb-3">
-          이후 청년미래적금이 출시됐는데, 만기까지의 총 수령액을
-          계산해보니 미래적금 쪽이 더 유리해서 갈아탔습니다. 이런
-          비교 계산은{' '}
-          <a
-            href="https://moduncalc.com/savings/doyak"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary no-underline hover:underline"
-          >
-            moduncalc 도약계좌 계산기
-          </a>
-          를 활용하면 편합니다.
+          이후 청년미래적금이 출시됐을 때 만기까지의 총 수령액을
+          계산해보니 미래적금 쪽이 더 유리해서 갈아탔습니다.
         </p>
-        <div className="bg-green-bg rounded-xl p-3 text-xs text-text">
-          <strong>팁:</strong> 정책형 적금은 중도해지 시 기여금을
-          돌려줘야 하므로, 갈아타기 전에 반드시 만기 예상 수령액을
-          비교 계산하세요.
+        <div className="bg-amber-bg rounded-xl p-3 text-xs text-text">
+          <strong>참고:</strong> 도약계좌 → 미래적금 갈아타기는 <strong>2026년 8월 6일부로 종료</strong>되었습니다.
+          이제는 도약계좌를 유지하거나 미래적금에 새로 가입하는 것만 가능합니다.
+          미래적금 월 납입 한도는 50만 원(도약계좌는 70만 원)입니다.
         </div>
       </Card>
 

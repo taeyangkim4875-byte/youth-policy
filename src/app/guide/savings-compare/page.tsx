@@ -108,7 +108,7 @@ export default function SavingsComparePage() {
           <div className="border-l-2 border-primary pl-3">
             <p className="text-[12px] font-bold text-primary mb-1">청년미래적금 — 지금 새로 시작한다면 이걸로</p>
             <p className="text-[12px] text-text leading-relaxed">
-              2026년 기준 청년 적금 중 정부기여금이 가장 높습니다. 월 최대 4만 원씩 5년이면 기여금만 <strong>240만 원</strong>. 기본 금리 5.0%에 우대금리까지 얹으면 시중 적금과 비교 자체가 안 됩니다. 이자소득 비과세 혜택도 있어서 실수령액이 더 커요. 만 19~34세, 개인소득 7,500만 원 이하라면 1순위로 가입해야 합니다.
+              2026년 기준 청년 적금 중 정부기여금이 가장 높습니다. 월 최대 4만 원씩 5년이면 기여금만 <strong>240만 원</strong>. 기본 금리 5.0%에 우대금리까지 얹으면 시중 적금과 비교 자체가 안 됩니다. 이자소득 비과세 혜택도 있어서 실수령액이 더 커요. 만 19~34세, 개인소득 7,500만 원 이하라면 1순위로 가입해야 합니다. 월 납입 한도는 <strong>50만 원</strong>입니다.
             </p>
           </div>
 
@@ -143,7 +143,7 @@ export default function SavingsComparePage() {
             <span className="flex items-center justify-center w-6 h-6 rounded-md bg-primary text-white text-[12px] font-bold shrink-0">1</span>
             <div>
               <p className="text-[12px] font-bold text-primary">청년미래적금</p>
-              <p className="text-[12px] text-text mt-0.5">기여금 월 4만 원 + 금리 5.0%+. 정부 지원 중 수익성 최고. 월 최대 70만 원까지.</p>
+              <p className="text-[12px] text-text mt-0.5">기여금 월 4만 원 + 금리 5.0%+. 정부 지원 중 수익성 최고. 월 최대 50만 원까지.</p>
             </div>
           </div>
           <div className="flex gap-3 items-start bg-amber-bg rounded-lg p-3">
@@ -218,21 +218,21 @@ export default function SavingsComparePage() {
             <div className="px-3 py-2.5 space-y-1.5 text-[12px] text-text">
               <div className="flex justify-between">
                 <span className="text-muted">청년미래적금</span>
-                <span className="font-semibold text-primary">70만 원 (한도 최대)</span>
+                <span className="font-semibold text-primary">50만 원 (한도 최대)</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted">청약통장</span>
                 <span className="font-semibold text-amber">10만 원</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted">특판 적금</span>
-                <span className="font-semibold">20만 원</span>
+                <span className="text-muted">특판 적금 또는 도약계좌</span>
+                <span className="font-semibold">20만 원+</span>
               </div>
               <div className="flex justify-between border-t border-line2 pt-1.5 mt-1">
                 <span className="text-muted">월 저축 합계</span>
-                <span className="font-extrabold">100만 원</span>
+                <span className="font-extrabold">80만 원+</span>
               </div>
-              <p className="text-[11px] text-muted">미래적금을 한도 꽉 채우는 게 기여금 극대화 전략.</p>
+              <p className="text-[11px] text-muted">미래적금을 한도(50만 원) 꽉 채우는 게 기여금 극대화 전략. 여유분은 특판 적금이나 도약계좌로.</p>
             </div>
           </div>
 
@@ -242,12 +242,12 @@ export default function SavingsComparePage() {
       {/* 5년 후 자산 시뮬레이션 */}
       <Card>
         <h2 className="text-[13px] font-extrabold mb-1 text-text">5년 후 예상 자산 시뮬레이션</h2>
-        <p className="text-[12px] text-muted mb-3">청년미래적금 월 70만 원, 금리 5.0%, 기여금 최대 수령 기준</p>
+        <p className="text-[12px] text-muted mb-3">청년미래적금 월 50만 원, 금리 5.0%, 기여금 최대 수령 기준</p>
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div className="bg-surface border border-line rounded-lg p-2.5 text-center">
             <p className="text-[11px] text-muted mb-1">원금</p>
-            <p className="text-[16px] font-extrabold text-text">4,200만</p>
-            <p className="text-[10px] text-muted mt-0.5">70만 × 60개월</p>
+            <p className="text-[16px] font-extrabold text-text">3,000만</p>
+            <p className="text-[10px] text-muted mt-0.5">50만 × 60개월</p>
           </div>
           <div className="bg-surface border border-line rounded-lg p-2.5 text-center">
             <p className="text-[11px] text-muted mb-1">정부기여금</p>
@@ -256,13 +256,13 @@ export default function SavingsComparePage() {
           </div>
           <div className="bg-primary-bg border border-primary/20 rounded-lg p-2.5 text-center">
             <p className="text-[11px] text-primary mb-1">이자 (세전)</p>
-            <p className="text-[16px] font-extrabold text-primary">+약 840만</p>
+            <p className="text-[16px] font-extrabold text-primary">+약 600만</p>
             <p className="text-[10px] text-muted mt-0.5">5.0% 복리 추정</p>
           </div>
         </div>
         <div className="bg-primary rounded-lg p-3 text-center text-white">
           <p className="text-[12px] opacity-80 mb-0.5">5년 후 예상 수령액 (비과세 혜택 포함)</p>
-          <p className="text-[24px] font-extrabold">약 5,280만 원</p>
+          <p className="text-[24px] font-extrabold">약 3,840만 원</p>
           <p className="text-[11px] opacity-70 mt-0.5">실제 금리 변동에 따라 달라집니다</p>
         </div>
         <p className="text-[11px] text-muted mt-2">
@@ -282,18 +282,21 @@ export default function SavingsComparePage() {
       {/* 내 경험 */}
       <Card>
         <h2 className="text-[13px] font-extrabold mb-3 text-text">내 경험 — 도약계좌에서 미래적금으로 갈아탄 이유</h2>
+        <div className="bg-amber-bg border border-amber/30 rounded-lg p-3 mb-3 text-[12px] text-text leading-relaxed">
+          <strong className="text-amber">안내:</strong> 도약계좌 → 미래적금 갈아타기는 2026년 8월 6일부로 종료되었습니다. 현재는 갈아타기 신청이 불가능합니다.
+        </div>
         <div className="bg-green-bg rounded-lg p-3 text-[12px] text-text leading-relaxed space-y-2">
           <p>
             저는 청년도약계좌를 <strong>3년간 월 70만 원씩 유지</strong>했습니다. 그동안 받은 정부기여금은 월 약 2만 5천 원, 3년 합산 약 90만 원이었어요.
           </p>
           <p>
-            2026년에 청년미래적금이 출시되면서 계산을 해봤는데, 남은 2년치 기여금 차이가 꽤 컸습니다. 도약계좌를 유지하면 남은 2년 기여금이 약 60만 원인데, 미래적금으로 갈아타면 같은 기간 기여금이 96만 원이고 금리도 0.5%p 높았거든요.
+            2026년 초 청년미래적금이 출시되면서 계산을 해봤는데, 남은 2년치 기여금 차이가 꽤 컸습니다. 도약계좌를 유지하면 남은 2년 기여금이 약 60만 원인데, 미래적금으로 갈아타면 같은 기간 기여금이 96만 원이고 금리도 0.5%p 높았거든요.
           </p>
           <p>
-            결국 기존 기여금 90만 원을 반환하더라도, <strong>남은 2년간의 차액 + 금리 차이로 약 50만 원 이상 이득</strong>이 나왔습니다. 그래서 갈아탔고, 지금까지 후회 없어요.
+            결국 기존 기여금 90만 원을 반환하더라도, <strong>남은 2년간의 차액 + 금리 차이로 약 50만 원 이상 이득</strong>이 나왔습니다. 그래서 갈아탔고, 지금까지 후회 없어요. (갈아타기는 이미 종료됐지만, 지금 도약계좌를 유지 중인 분께는 당시 손익 계산 방식이 참고가 될 수 있습니다.)
           </p>
           <p className="text-[11px] text-muted">
-            계산 방법과 갈아타기 전 체크리스트는{' '}
+            당시 손익 계산 방법은{' '}
             <Link href="/guide/finance" className="text-primary no-underline hover:underline">
               청년도약계좌 vs 청년미래적금 상세 비교
             </Link>
@@ -343,8 +346,8 @@ export default function SavingsComparePage() {
           href="/guide/finance"
           className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
         >
-          <span className="text-[13px] font-bold text-text">청년도약계좌 vs 청년미래적금 — 갈아타기 전 계산법</span>
-          <p className="text-[12px] text-muted mt-0.5">실제 갈아탄 경험과 손익 계산 방법 상세 정리</p>
+          <span className="text-[13px] font-bold text-text">청년도약계좌 vs 청년미래적금 — 갈아탄 경험과 손익 계산</span>
+          <p className="text-[12px] text-muted mt-0.5">실제 갈아탄 경험 기반 손익 계산 방법 정리 (갈아타기는 2026.8.6 종료)</p>
         </Link>
         <Link
           href="/guide/housing"

@@ -19,8 +19,8 @@ export default function FinanceGuidePage() {
             a: '2026년 기준 청년미래적금이 정부기여금과 우대금리 면에서 더 유리합니다. 다만 기존 도약계좌를 오래 유지했다면 해지 시 불이익을 따져봐야 합니다.',
           },
           {
-            q: '청년도약계좌에서 청년미래적금으로 갈아타도 되나요?',
-            a: '가능합니다. 다만 도약계좌 해지 후 가입해야 하므로, 기존 기여금과 비과세 혜택을 포기하게 됩니다. 남은 만기가 짧다면 유지가 나을 수 있습니다.',
+            q: '청년도약계좌에서 청년미래적금으로 갈아탈 수 있나요?',
+            a: '2026년 8월 6일부로 도약계좌→미래적금 갈아타기 특례가 종료되었습니다. 현재는 갈아타기가 불가능하며, 신규로 청년미래적금에 가입하거나 도약계좌를 만기까지 유지하는 방법 중 선택해야 합니다.',
           },
           {
             q: '청년도약계좌 정부기여금은 얼마인가요?',
@@ -70,7 +70,7 @@ export default function FinanceGuidePage() {
               <tr className="border-b border-line2">
                 <td className="py-2.5 pr-2 text-muted">월 납입 한도</td>
                 <td className="py-2.5 px-2">최대 70만 원</td>
-                <td className="py-2.5 pl-2 font-semibold">최대 70만 원</td>
+                <td className="py-2.5 pl-2 font-semibold">최대 50만 원</td>
               </tr>
               <tr className="border-b border-line2">
                 <td className="py-2.5 pr-2 text-muted">만기</td>
@@ -110,7 +110,7 @@ export default function FinanceGuidePage() {
       {/* 5년 만기 시뮬레이션 */}
       <Card>
         <h2 className="text-base font-bold mb-3">5년 만기 예상 금액 비교</h2>
-        <p className="text-[12px] text-muted mb-3">월 70만 원 납입, 정부기여금 최대 수령 기준</p>
+        <p className="text-[12px] text-muted mb-3">정부기여금 최대 수령 기준 (도약계좌 월 70만 원 / 미래적금 월 50만 원)</p>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-[#f3f5f9] rounded-xl p-3 text-center">
             <p className="text-[11px] text-muted mb-1">청년도약계좌</p>
@@ -119,8 +119,8 @@ export default function FinanceGuidePage() {
           </div>
           <div className="bg-primary-bg rounded-xl p-3 text-center">
             <p className="text-[11px] text-primary font-semibold mb-1">청년미래적금</p>
-            <p className="text-[20px] font-extrabold text-primary">약 5,300만 원</p>
-            <p className="text-[11px] text-muted mt-1">원금 4,200만 + 기여금 240만 + 이자</p>
+            <p className="text-[20px] font-extrabold text-primary">약 4,000만 원</p>
+            <p className="text-[11px] text-muted mt-1">원금 3,000만 + 기여금 240만 + 이자</p>
           </div>
         </div>
         <p className="text-[10px] text-muted mt-2">
@@ -141,6 +141,9 @@ export default function FinanceGuidePage() {
       {/* 실제 경험 */}
       <Card>
         <h2 className="text-base font-bold mb-3">내가 갈아탄 이유 (실제 경험)</h2>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3 text-[12px] text-red-700 leading-relaxed">
+          <strong>공지 (2026.8.6 기준):</strong> 도약계좌→미래적금 갈아타기 특례는 2026년 8월 6일부로 종료되었습니다. 아래 내용은 종료 전에 갈아탄 실제 경험이며, 현재는 갈아타기가 불가능합니다.
+        </div>
         <div className="space-y-3 text-[13px] text-text leading-relaxed">
           <p>
             저는 청년도약계좌를 매월 70만 원씩 <strong>3년간 유지</strong>했습니다.
@@ -154,11 +157,11 @@ export default function FinanceGuidePage() {
           <p>
             물론 도약계좌를 해지하면 기존 기여금을 포기해야 해서 고민했지만,
             남은 만기(2년)의 추가 기여금 + 금리 차이를 따져보니
-            <strong>갈아타는 게 약 50만 원 이상 이득</strong>이었습니다.
+            <strong>갈아타는 게 약 50만 원 이상 이득</strong>이었습니다. 마감 전에 결정할 수
+            있어서 다행이었습니다.
           </p>
           <div className="bg-amber-bg rounded-lg p-3 text-[12px] text-amber">
-            <strong>주의:</strong> 도약계좌 만기가 1년 이내로 남았다면 유지하는 게 나을 수 있습니다.
-            해지 시 기여금을 돌려줘야 하니까요. 본인 상황에 맞게 계산해보세요.
+            <strong>참고:</strong> 갈아타기 특례는 종료됐지만, 도약계좌를 새로 가입할지 미래적금을 선택할지는 여전히 중요한 선택입니다. 아래 비교를 참고하세요.
           </div>
         </div>
       </Card>
@@ -166,21 +169,23 @@ export default function FinanceGuidePage() {
       {/* 어떤 사람에게 뭐가 유리? */}
       <Card>
         <h2 className="text-base font-bold mb-3">나한테는 뭐가 맞을까?</h2>
+        <p className="text-[12px] text-muted mb-2">갈아타기는 종료됐으니, 새로 시작한다면 어떤 걸 선택할지 기준을 정리했습니다.</p>
         <div className="space-y-2">
           <div className="bg-primary-bg rounded-lg p-3">
-            <p className="text-[12px] font-bold text-primary mb-1">청년미래적금이 유리한 경우</p>
+            <p className="text-[12px] font-bold text-primary mb-1">청년미래적금을 선택할 경우</p>
             <ul className="text-[12px] text-text space-y-1 list-disc pl-4">
-              <li>새로 시작하는 경우 (기존 적금 없음)</li>
-              <li>도약계좌 유지 기간이 2년 이하인 경우</li>
+              <li>지금 새로 적금을 시작하는 경우</li>
+              <li>월 50만 원 이하로 납입할 계획인 경우</li>
               <li>소득이 낮아서 기여금을 최대로 받을 수 있는 경우</li>
+              <li>금리가 더 높은 상품을 원하는 경우</li>
             </ul>
           </div>
           <div className="bg-[#f3f5f9] rounded-lg p-3">
-            <p className="text-[12px] font-bold text-text mb-1">도약계좌 유지가 유리한 경우</p>
+            <p className="text-[12px] font-bold text-text mb-1">청년도약계좌를 선택할 경우</p>
             <ul className="text-[12px] text-text space-y-1 list-disc pl-4">
-              <li>만기까지 1년 이내 남은 경우</li>
-              <li>기여금을 3년 이상 쌓아둔 경우</li>
-              <li>은행 이동이 번거로운 경우 (큰 차이 아니니까)</li>
+              <li>월 50만 원 초과 ~ 70만 원까지 납입하고 싶은 경우</li>
+              <li>이미 도약계좌를 보유 중이고 만기가 얼마 안 남은 경우</li>
+              <li>은행·상품 변경 없이 기존 계좌를 유지하고 싶은 경우</li>
             </ul>
           </div>
         </div>

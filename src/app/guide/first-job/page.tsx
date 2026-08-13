@@ -102,7 +102,7 @@ export default function FirstJobGuidePage() {
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div className="bg-primary-bg rounded-lg p-2 text-center">
             <p className="text-[10px] text-muted mb-0.5">월 납입 한도</p>
-            <p className="text-[14px] font-extrabold text-primary">70만 원</p>
+            <p className="text-[14px] font-extrabold text-primary">50만 원</p>
           </div>
           <div className="bg-primary-bg rounded-lg p-2 text-center">
             <p className="text-[10px] text-muted mb-0.5">정부 기여금</p>
@@ -116,7 +116,7 @@ export default function FirstJobGuidePage() {
 
         <div className="text-[12px] text-text space-y-2 leading-relaxed">
           <p>
-            월 70만 원 납입하면 정부에서 월 4만 원을 얹어줍니다. 5년 동안 받는 기여금만
+            월 50만 원 납입하면 정부에서 월 4만 원을 얹어줍니다. 5년 동안 받는 기여금만
             <strong> 240만 원</strong>이고, 거기다 비과세 이자까지 붙으니까 일반 적금이랑
             비교가 안 됩니다.
           </p>
@@ -311,10 +311,10 @@ export default function FirstJobGuidePage() {
 
         <div className="space-y-2 mb-3">
           {[
-            { label: '청년미래적금', amount: '70만 원', note: '정부기여금 4만 원 추가', color: 'bg-primary-bg text-primary' },
+            { label: '청년미래적금', amount: '50만 원', note: '정부기여금 4만 원 추가', color: 'bg-primary-bg text-primary' },
             { label: '월세 (또는 전세대출 상환)', amount: '50만 원', note: '월세 지원 받으면 실부담 30만↓', color: 'bg-amber-bg text-amber' },
             { label: '내일채움공제 납입', amount: '12.5만 원', note: '회사 + 정부가 2배 넣어줌', color: 'bg-green-bg text-green' },
-            { label: '생활비 (식비·통신·여가)', amount: '80만 원', note: 'K-패스로 교통비 절약 가능', color: 'bg-surface border border-line2 text-text' },
+            { label: '생활비 (식비·통신·여가)', amount: '100만 원', note: 'K-패스로 교통비 절약 가능', color: 'bg-surface border border-line2 text-text' },
             { label: '비상금 통장', amount: '17.5만 원', note: '3~6개월치 생활비 목표', color: 'bg-surface border border-line2 text-text' },
           ].map((item, i) => (
             <div key={i} className={`rounded-lg p-3 ${item.color}`}>
@@ -347,7 +347,7 @@ export default function FirstJobGuidePage() {
             {[
               { title: '중소기업 소득세 감면 신청서', desc: '미리 제출하면 매달 원천징수부터 줄어듭니다. 늦으면 연말정산에서 한 번에 환급.' },
               { title: '월세 세액공제', desc: '월세 계약서 + 이체 내역만 있으면 됩니다. 연 750만 원 한도로 15~17% 세액공제.' },
-              { title: '청년미래적금 소득공제', desc: '납입금액의 40%까지 공제됩니다. 70만 원 납입 시 연간 336만 원 공제 효과.' },
+              { title: '청년미래적금 소득공제', desc: '납입금액의 40%까지 공제됩니다. 50만 원 납입 시 연간 240만 원 공제 효과.' },
               { title: '대중교통·신용카드 공제', desc: 'K-패스 이용 내역도 대중교통 공제로 잡힙니다. 총급여 25% 초과분부터 적용.' },
             ].map((item, i) => (
               <div key={i} className="flex gap-2">
@@ -443,8 +443,10 @@ export default function FirstJobGuidePage() {
       <div className="bg-green-bg rounded-[var(--radius)] p-4 mb-3">
         <p className="text-[12px] font-bold text-green mb-2">작성자 경험담</p>
         <p className="text-[12px] text-text leading-relaxed">
-          저는 취업하고 나서 도약계좌에서 미래적금으로 갈아타면서 월 기여금이 2.5만 원에서 4만 원으로 올랐어요.
-          당시엔 작은 차이처럼 느껴졌는데, 5년 계산해보니 90만 원 차이였습니다.
+          저는 취업하고 나서 도약계좌에서 미래적금으로 갈아탔는데, 당시에는 갈아타기가 가능했습니다.
+          월 기여금이 2.5만 원에서 4만 원으로 올랐고, 5년 계산해보니 90만 원 차이였습니다.
+          다만 <strong>갈아타기는 2026년 8월 6일부로 종료</strong>되어 지금은 더 이상 불가능합니다.
+          지금 도약계좌를 쓰고 있다면 갈아타기 대신 도약계좌를 유지하거나, 별도로 미래적금에 새로 가입하는 방식을 선택해야 합니다.
           소득세 감면은 첫 달에 신청서 냈더니 그달부터 원천징수액이 확 줄어서 월급이
           더 들어온 것처럼 느껴졌고요. 내일채움공제는 입사 4개월 차에 신청했는데
           &ldquo;왜 이걸 이제야 알았지&rdquo; 싶었습니다.

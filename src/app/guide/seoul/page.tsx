@@ -94,7 +94,7 @@ export default function SeoulGuidePage() {
               5년 만기 · 연 최대 48만 원 기여금 · 전국
             </p>
             <div className="bg-green-bg rounded-lg p-2 mt-2 text-[11px] text-green">
-              <strong>내 경험:</strong> 도약계좌를 3년 하다가 갈아탔어요.
+              <strong>내 경험:</strong> 도약계좌를 3년 하다가 갈아탔어요 (갈아타기는 8/6 종료됨).
               기여금이 더 크고 금리도 높아서요.{' '}
               <Link href="/guide/finance" className="text-primary no-underline hover:underline">
                 자세한 비교 →

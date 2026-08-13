@@ -104,7 +104,7 @@ export default function FirstIndependencePage() {
             { done: true, text: '이사비 지원 신청 (선착순!)', sub: '서울시 기준 최대 40만 원' },
             { done: false, text: 'K-패스 카드 발급', sub: '대중교통 환급 20~53%' },
             { done: false, text: '공과금 자동이체 설정', sub: '전기·가스·수도·관리비' },
-            { done: false, text: '청년미래적금 가입 검토', sub: '월 70만 원, 5년, 정부기여금 최대 월 4만 원' },
+            { done: false, text: '청년미래적금 가입 검토', sub: '월 50만 원, 5년, 정부기여금 최대 월 4만 원' },
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-3 p-2.5 bg-[#F7F8FA] rounded-lg">
               <div className={`shrink-0 w-4 h-4 rounded-full mt-0.5 flex items-center justify-center text-[10px] font-bold ${item.done ? 'bg-primary text-white' : 'border-2 border-line bg-white text-muted'}`}>
@@ -343,7 +343,7 @@ export default function FirstIndependencePage() {
           <h3 className="text-[14px] font-bold text-text">청년미래적금 가입 — 정부가 돈을 얹어주는 적금</h3>
         </div>
         <div className="bg-primary-bg rounded-xl p-4 mb-3">
-          <div className="text-[20px] font-extrabold text-primary-d">월 70만 원 × 5년 = 목돈</div>
+          <div className="text-[20px] font-extrabold text-primary-d">월 50만 원 × 5년 = 목돈</div>
           <div className="text-[11px] text-muted mt-1">정부기여금 월 최대 4만 원 + 이자 비과세</div>
         </div>
         <div className="space-y-2 text-[13px] text-text leading-relaxed">
