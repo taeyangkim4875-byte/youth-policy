@@ -57,7 +57,14 @@ export default function PolicyList({ policies }: { policies: Policy[] }) {
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
-    let result = policies.filter((p) => p.status === 'active');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let result = policies.filter((p) => {
+      if (p.status !== 'active') return false;
+      // 마감된 정책 제외
+      if (p.apply_end && new Date(p.apply_end) < today) return false;
+      return true;
+    });
     if (activeCat !== '전체') result = result.filter((p) => p.category === activeCat);
     if (activeRegion !== '전체') result = result.filter((p) => matchesRegion(p, activeRegion));
     if (searchQuery.trim()) {
@@ -75,9 +82,12 @@ export default function PolicyList({ policies }: { policies: Policy[] }) {
   const paged = filtered.slice(0, page * PAGE_SIZE);
 
   const catCounts = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const counts: Record<string, number> = { '전체': 0 };
     policies.forEach((p) => {
       if (p.status !== 'active') return;
+      if (p.apply_end && new Date(p.apply_end) < today) return;
       counts['전체']++;
       counts[p.category] = (counts[p.category] || 0) + 1;
     });

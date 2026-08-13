@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
 import { SIDO, SIGUNGU } from '@/lib/regions';
-import { matchPolicies } from '@/lib/matching';
+import { matchPolicies, annualBenefit } from '@/lib/matching';
 import type { Policy, UserCondition } from '@/lib/types';
 
 const EMPLOYMENT_OPTIONS = [
@@ -33,46 +33,6 @@ const chipCls = (on: boolean) =>
 function formatMoney(amount: number): string {
   if (amount >= 10000) return `${Math.round(amount / 10000)}만`;
   return `${amount.toLocaleString()}`;
-}
-
-// 정책의 연간 실질 혜택 금액 추정 (만원 단위)
-function annualBenefit(p: Policy): number {
-  // 대출은 혜택금이 아님
-  if (p.benefit_type === 'loan') return 0;
-
-  // benefit_total이 연 1,200만원(월 100만) 초과면 대출/보증금일 가능성 높음 → 제외
-  if (p.benefit_total && p.benefit_total > 12000000) return 0;
-
-  if (p.benefit_monthly) {
-    const months = p.benefit_duration || 12;
-    const annual = p.benefit_monthly * Math.min(months, 12);
-    // 월 100만원 초과는 비현실적 → 제외
-    if (p.benefit_monthly > 1000000) return 0;
-    return annual;
-  }
-
-  if (p.benefit_total) {
-    // 1회성 지원금은 그대로 (연간 기준)
-    return p.benefit_total;
-  }
-
-  return 0;
-}
-
-// 정책 정렬: 실질 혜택 큰 순 → 마감 임박 우선
-function sortPolicies(policies: Policy[]): Policy[] {
-  const now = Date.now();
-  return [...policies].sort((a, b) => {
-    // 1) 실질 혜택 금액 큰 순
-    const aAmt = annualBenefit(a);
-    const bAmt = annualBenefit(b);
-    if (bAmt !== aAmt) return bAmt - aAmt;
-
-    // 2) 마감 임박 우선
-    const aEnd = a.apply_end ? new Date(a.apply_end).getTime() - now : Infinity;
-    const bEnd = b.apply_end ? new Date(b.apply_end).getTime() - now : Infinity;
-    return aEnd - bEnd;
-  });
 }
 
 function calcBenefitSummary(policies: Policy[]) {
@@ -130,7 +90,7 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
     const cond: UserCondition = {
       birthYear, sido, sigungu, employment, incomePct,
     };
-    return sortPolicies(matchPolicies(policies, cond));
+    return matchPolicies(policies, cond);
   }, [submitted, birthYear, sido, sigungu, employment, incomePct, policies, canSubmit]);
 
   const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
