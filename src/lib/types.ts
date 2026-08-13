@@ -14,6 +14,11 @@ export interface Policy {
   education: string | null;
   marriage: string | null;
   benefit: string;
+  benefit_monthly?: number | null;
+  benefit_total?: number | null;
+  benefit_duration?: number | null;
+  benefit_type?: string | null;
+  benefit_unknown?: boolean;
   how_to_apply: string | null;
   apply_start: string | null;
   apply_end: string | null;

@@ -185,10 +185,10 @@ export default async function HomePage() {
 
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold leading-tight">
-          내가 받을 수 있는<br /><span className="text-primary">청년정책</span>, 한눈에
+          네가 놓치고 있는 <span className="text-primary">돈</span>,<br />찾아줄게
         </h1>
         <p className="text-[13px] text-muted mt-1.5">
-          분야별로 둘러보거나, 내 조건을 입력해 맞춤 정책을 찾아보세요.
+          조건만 입력하면 받을 수 있는 청년 지원금을 바로 알려드려요.
         </p>
       </div>
 

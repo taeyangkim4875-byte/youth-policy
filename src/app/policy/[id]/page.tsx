@@ -245,13 +245,30 @@ export default async function PolicyDetailPage({
 
       <Card>
         <h2 className="text-base font-bold mb-3">신청 방법</h2>
+        {p.apply_end && (() => {
+          const diff = Math.ceil((new Date(p.apply_end).getTime() - Date.now()) / 86400000);
+          if (diff < 0) return (
+            <div className="bg-[#f3f5f9] rounded-lg p-3 mb-3 text-sm text-muted font-semibold">
+              신청 마감됨
+            </div>
+          );
+          return (
+            <div className={`rounded-lg p-3 mb-3 text-sm font-semibold ${
+              diff <= 7 ? 'bg-amber-bg text-amber' : diff <= 30 ? 'bg-primary-bg text-primary' : 'bg-green-bg text-green'
+            }`}>
+              {diff === 0 ? '오늘 마감!' : `마감까지 D-${diff}`}
+              <span className="font-normal ml-2">
+                ({p.apply_end.replace(/-/g, '.')}까지)
+              </span>
+            </div>
+          );
+        })()}
         {p.how_to_apply && (
-          <p className="text-sm text-text mb-3">{p.how_to_apply}</p>
+          <p className="text-sm text-text mb-3 whitespace-pre-line">{p.how_to_apply}</p>
         )}
-        {(p.apply_start || p.apply_end) && (
+        {(p.apply_start || p.apply_end) && !p.apply_end && (
           <p className="text-sm text-muted mb-3">
-            신청 기간: {p.apply_start?.replace(/-/g, '.') || '미정'} ~{' '}
-            {p.apply_end?.replace(/-/g, '.') || '미정'}
+            신청 기간: {p.apply_start?.replace(/-/g, '.') || '미정'} ~ 미정
           </p>
         )}
         {p.apply_url && (

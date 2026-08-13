@@ -30,6 +30,52 @@ const chipCls = (on: boolean) =>
       : 'border-line bg-[#fbfcfe] text-muted hover:border-primary/40'
   }`;
 
+function formatMoney(amount: number): string {
+  if (amount >= 100000000) return `${(amount / 100000000).toFixed(1).replace(/\.0$/, '')}억`;
+  if (amount >= 10000) return `${Math.round(amount / 10000)}만`;
+  return `${amount.toLocaleString()}`;
+}
+
+function calcBenefitSummary(policies: Policy[]) {
+  let totalMax = 0;
+  let countWithAmount = 0;
+  let countUnknown = 0;
+  let deadlineSoonTotal = 0;
+  let deadlineSoonCount = 0;
+  const now = Date.now();
+  const thirtyDays = 30 * 86400000;
+
+  for (const p of policies) {
+    if (p.benefit_unknown || p.benefit_type === 'loan') {
+      countUnknown++;
+      continue;
+    }
+
+    const amount = p.benefit_total || (p.benefit_monthly && p.benefit_duration
+      ? p.benefit_monthly * p.benefit_duration
+      : p.benefit_monthly
+        ? p.benefit_monthly * 12
+        : 0);
+
+    if (amount > 0) {
+      totalMax += amount;
+      countWithAmount++;
+
+      if (p.apply_end) {
+        const diff = new Date(p.apply_end).getTime() - now;
+        if (diff >= 0 && diff <= thirtyDays) {
+          deadlineSoonTotal += amount;
+          deadlineSoonCount++;
+        }
+      }
+    } else {
+      countUnknown++;
+    }
+  }
+
+  return { totalMax, countWithAmount, countUnknown, deadlineSoonTotal, deadlineSoonCount };
+}
+
 export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const currentYear = new Date().getFullYear();
 
@@ -50,6 +96,8 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
     };
     return matchPolicies(policies, cond);
   }, [submitted, birthYear, sido, sigungu, employment, incomePct, policies, canSubmit]);
+
+  const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
 
   return (
     <>
@@ -145,6 +193,32 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
       {/* 매칭 결과 */}
       {submitted && (
         <div className="mt-3">
+          {/* "놓친 돈" 요약 카드 */}
+          {matchResults.length > 0 && summary.totalMax > 0 && (
+            <div className="bg-primary text-white rounded-[var(--radius)] p-4 mb-3">
+              <p className="text-[12px] font-semibold opacity-80 mb-1">받을 수 있는 최대 예상 지원 규모</p>
+              <p className="text-[28px] font-extrabold leading-tight">
+                연 최대 {formatMoney(summary.totalMax)}원
+              </p>
+              <div className="flex items-center gap-3 mt-2 text-[12px] font-medium opacity-90">
+                <span>매칭 {matchResults.length}건</span>
+                <span>금액 확인 {summary.countWithAmount}건</span>
+                {summary.countUnknown > 0 && <span>금액 미정 {summary.countUnknown}건</span>}
+              </div>
+              {summary.deadlineSoonCount > 0 && (
+                <div className="mt-3 bg-white/15 rounded-lg p-2.5">
+                  <p className="text-[12px] font-bold">
+                    이번 달 마감 임박 {summary.deadlineSoonCount}건 · {formatMoney(summary.deadlineSoonTotal)}원
+                  </p>
+                  <p className="text-[11px] opacity-80 mt-0.5">놓치면 다음 모집까지 기다려야 해요</p>
+                </div>
+              )}
+              <p className="text-[10px] opacity-60 mt-2">
+                * 정책별 최대 금액 기준 단순 합산이며, 중복 수혜 제한·개인 조건에 따라 실제 수령액은 다를 수 있습니다.
+              </p>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-[16px] font-extrabold">
               맞춤 정책 <span className="text-primary">{matchResults.length}건</span>
