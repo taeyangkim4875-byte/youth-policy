@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
 import { SIDO, SIGUNGU } from '@/lib/regions';
@@ -29,6 +30,14 @@ const EDUCATION_OPTIONS = [
   { value: '대졸', label: '대졸' },
   { value: '석박사', label: '석박사' },
 ];
+
+const CAT_COLORS: Record<string, string> = {
+  '주거': 'bg-primary-bg text-primary',
+  '취업': 'bg-[#e0f2fe] text-[#0369a1]',
+  '금융·자산': 'bg-green-bg text-green',
+  '교육': 'bg-[#f3e8ff] text-[#7c3aed]',
+  '복지·문화': 'bg-[#fce7f3] text-[#be185d]',
+};
 
 const INTEREST_OPTIONS = [
   { value: '주거', label: '주거' },
@@ -347,32 +356,92 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
 
           {/* 맞춤 추천 TOP 5 */}
           {recommend.picks.length > 0 && (
-            <div className="bg-surface border border-line rounded-[var(--radius)] p-4 mb-3">
-              <p className="text-[13px] font-extrabold text-text mb-1">
-                맞춤 추천 TOP {recommend.picks.length}
-              </p>
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[14px] font-extrabold text-text">
+                  맞춤 추천 TOP {recommend.picks.length}
+                </p>
+                <p className="text-[11px] text-muted">{recommend.tip}</p>
+              </div>
 
-              <p className="text-[12px] text-muted mb-3 leading-relaxed">
-                {recommend.tip}
-              </p>
-
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {recommend.picks.map((pick, i) => {
-                  const policy = matchResults[pick.idx];
-                  if (!policy) return null;
+                  const p = matchResults[pick.idx];
+                  if (!p) return null;
+                  const catColor = CAT_COLORS[p.category] || 'bg-primary-bg text-primary';
+                  const dd = p.apply_end ? Math.ceil((new Date(p.apply_end).getTime() - Date.now()) / 86400000) : null;
+
                   return (
-                    <div key={pick.idx} className="bg-primary-bg/50 rounded-lg p-3 border border-line">
-                      <div className="flex items-start gap-2.5">
+                    <div key={pick.idx} className="bg-surface border border-line rounded-[var(--radius)] p-4">
+                      {/* 헤더: 순위 + 카테고리 + 추천 이유 */}
+                      <div className="flex items-center gap-2 mb-2">
                         <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
                           pick.priority === '높음' ? 'bg-primary text-white' : 'bg-line text-muted'
                         }`}>
                           {i + 1}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-bold text-text truncate">{policy.name}</p>
-                          <p className="text-[11px] text-primary mt-0.5">{pick.reason}</p>
-                          <p className="text-[11px] text-muted mt-0.5">{policy.benefit.slice(0, 50)}</p>
-                        </div>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${catColor}`}>
+                          {p.category}
+                        </span>
+                        <span className="text-[10px] font-semibold text-primary bg-primary-bg px-1.5 py-0.5 rounded-md">
+                          {pick.reason}
+                        </span>
+                        {dd !== null && dd >= 0 && dd <= 30 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-bg text-amber ml-auto">
+                            D-{dd}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 정책명 */}
+                      <h3 className="text-[14px] font-extrabold text-text leading-snug mb-1.5">
+                        {p.name}
+                      </h3>
+
+                      {/* 요약 */}
+                      <p className="text-[12px] text-muted leading-relaxed mb-2">
+                        {p.summary}
+                      </p>
+
+                      {/* 혜택 */}
+                      <div className="bg-green-bg/60 rounded-lg px-3 py-2 mb-3">
+                        <p className="text-[12px] font-semibold text-green leading-relaxed">
+                          {p.benefit}
+                        </p>
+                      </div>
+
+                      {/* 메타 정보 */}
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted mb-3">
+                        {p.org_name && <span>{p.org_name}</span>}
+                        {p.min_age != null && p.max_age != null && (
+                          <span>만 {p.min_age}~{p.max_age}세</span>
+                        )}
+                        {p.regions && p.regions.length > 0 && (
+                          <span>{p.regions.includes('전국') ? '전국' : p.regions[0]}</span>
+                        )}
+                        {p.apply_end && (
+                          <span>마감 {p.apply_end.replace(/-/g, '.')}</span>
+                        )}
+                      </div>
+
+                      {/* 신청 방법 + 링크 */}
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/policy/${p.id}`}
+                          className="flex-1 py-2.5 text-center bg-primary text-white text-[12px] font-bold rounded-lg hover:bg-primary-d transition-colors no-underline"
+                        >
+                          자세히 보기
+                        </Link>
+                        {p.apply_url && (
+                          <a
+                            href={p.apply_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 py-2.5 text-center border border-primary text-primary text-[12px] font-bold rounded-lg hover:bg-primary-bg transition-colors no-underline"
+                          >
+                            바로 신청하기
+                          </a>
+                        )}
                       </div>
                     </div>
                   );
