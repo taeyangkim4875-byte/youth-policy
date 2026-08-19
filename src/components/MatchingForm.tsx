@@ -8,6 +8,7 @@ import { SIDO, SIGUNGU } from '@/lib/regions';
 import { matchPolicies, annualBenefit } from '@/lib/matching';
 import { smartRecommend } from '@/lib/recommend';
 import type { Policy, UserCondition } from '@/lib/types';
+import PolicySimulator from '@/components/PolicySimulator';
 
 const EMPLOYMENT_OPTIONS = [
   { value: '미취업', label: '미취업·구직중' },
@@ -449,6 +450,14 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* 정책 조합 시뮬레이터 */}
+          {matchResults.length > 0 && (
+            <div className="mb-3">
+              <p className="text-[14px] font-extrabold text-text mb-2">정책 조합 시뮬레이터</p>
+              <PolicySimulator policies={matchResults} />
             </div>
           )}
 

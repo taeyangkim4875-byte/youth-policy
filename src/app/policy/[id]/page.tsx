@@ -3,6 +3,7 @@ import Card from '@/components/Card';
 import { FaqJsonLd } from '@/components/JsonLd';
 import { getSupabase } from '@/lib/supabase';
 import type { Policy } from '@/lib/types';
+import { generateChecklist } from '@/lib/checklist';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -167,6 +168,7 @@ export default async function PolicyDetailPage({
 
   const colorClass = CATEGORY_COLORS[p.category] || 'bg-primary-bg text-primary';
   const relatedCalcs = CALC_LINKS[p.category] || [];
+  const checklist = generateChecklist(p);
 
   return (
     <>
@@ -281,6 +283,42 @@ export default async function PolicyDetailPage({
             공식 사이트에서 신청 →
           </a>
         )}
+      </Card>
+
+      <Card>
+        <h2 className="text-base font-bold mb-4">신청 체크리스트</h2>
+
+        <h3 className="text-sm font-semibold text-text mb-2">필요 서류</h3>
+        <ul className="space-y-2 mb-5">
+          {checklist.documents.map((doc) => (
+            <li key={doc.label} className="flex items-start gap-2.5">
+              <span className="mt-0.5 shrink-0 w-4 h-4 rounded border border-line bg-[#F7F8FA] flex items-center justify-center">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 4L3.5 6.5L9 1" stroke="#BDBDBD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <div>
+                <span className="text-sm font-medium text-text">{doc.label}</span>
+                <span className="text-xs text-muted ml-1.5">{doc.desc}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <h3 className="text-sm font-semibold text-text mb-2">신청 순서</h3>
+        <ol className="space-y-3">
+          {checklist.steps.map((step, idx) => (
+            <li key={step.label} className="flex items-start gap-3">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-primary-bg text-primary text-xs font-bold flex items-center justify-center mt-0.5">
+                {idx + 1}
+              </span>
+              <div>
+                <p className="text-sm font-medium text-text leading-snug">{step.label}</p>
+                <p className="text-xs text-muted mt-0.5 leading-relaxed">{step.desc}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </Card>
 
       {relatedCalcs.length > 0 && (

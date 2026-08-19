@@ -1,4 +1,5 @@
 import MatchingForm from '@/components/MatchingForm';
+import DeadlineBanner from '@/components/DeadlineBanner';
 import { WebAppJsonLd, FaqJsonLd } from '@/components/JsonLd';
 import { fetchAllPolicies } from '@/lib/supabase';
 import type { Policy } from '@/lib/types';
@@ -191,6 +192,8 @@ export default async function HomePage() {
           조건만 입력하면 받을 수 있는 청년 지원금을 바로 알려드려요.
         </p>
       </div>
+
+      <DeadlineBanner policies={policies} />
 
       <MatchingForm policies={policies} />
 
