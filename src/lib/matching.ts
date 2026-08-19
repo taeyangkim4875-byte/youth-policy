@@ -114,13 +114,33 @@ export function matchPolicies(policies: Policy[], cond: UserCondition): Policy[]
       continue;
     }
 
-    // Optional: housing
+    // Education check
+    if (p.education && cond.education) {
+      const eduRank: Record<string, number> = {
+        '고졸 이하': 1, '고졸': 1, '대학 재학': 2, '대졸': 3, '석박사': 4,
+      };
+      const userRank = eduRank[cond.education] || 0;
+      const policyEdu = p.education;
+      // "대졸 이상" 같은 조건이면 사용자 학력이 미달이면 제외
+      if (policyEdu.includes('대졸') && !policyEdu.includes('이하') && userRank < 3) continue;
+      if (policyEdu.includes('석박사') && userRank < 4) continue;
+    }
+
+    // Marriage check
+    if (p.marriage && cond.married !== undefined) {
+      if (p.marriage === '미혼' && cond.married === true) continue;
+      if (p.marriage === '기혼' && cond.married === false) continue;
+    }
+
+    // Housing check
     if (cond.homeless === false && p.housing_req === '무주택') {
       continue;
     }
 
-    // Optional: category
-    if (cond.category && cond.category !== '전체') {
+    // Category / interests check
+    if (cond.interests && cond.interests.length > 0) {
+      // interests가 있으면 해당 카테고리 우선 (but don't filter out)
+    } else if (cond.category && cond.category !== '전체') {
       if (p.category !== cond.category) continue;
     }
 

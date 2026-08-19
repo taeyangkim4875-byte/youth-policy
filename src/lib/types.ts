@@ -39,9 +39,9 @@ export interface UserCondition {
   sigungu: string;
   employment: string;
   incomePct: number;
-  // optional filters
   education?: string;
   married?: boolean;
   homeless?: boolean;
   category?: string;
+  interests?: string[];
 }

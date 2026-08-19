@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
 import { SIDO, SIGUNGU } from '@/lib/regions';
@@ -19,6 +19,22 @@ const INCOME_OPTIONS = [
   { value: 100, label: '중위 100% 이하' },
   { value: 150, label: '중위 150% 이하' },
   { value: 999, label: '해당 없음' },
+];
+
+const EDUCATION_OPTIONS = [
+  { value: '', label: '선택 안함' },
+  { value: '고졸 이하', label: '고졸 이하' },
+  { value: '대학 재학', label: '대학 재학' },
+  { value: '대졸', label: '대졸' },
+  { value: '석박사', label: '석박사' },
+];
+
+const INTEREST_OPTIONS = [
+  { value: '주거', label: '주거' },
+  { value: '취업', label: '취업' },
+  { value: '금융·자산', label: '금융·자산' },
+  { value: '교육', label: '교육' },
+  { value: '복지·문화', label: '복지·문화' },
 ];
 
 const inputCls =
@@ -72,6 +88,17 @@ function calcBenefitSummary(policies: Policy[]) {
   return { totalMax, countWithAmount, countLoan, countUnknown, deadlineSoonTotal, deadlineSoonCount };
 }
 
+interface AiPick {
+  idx: number;
+  reason: string;
+  priority: string;
+}
+
+interface AiResult {
+  picks: AiPick[];
+  tip: string;
+}
+
 export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const currentYear = new Date().getFullYear();
 
@@ -80,20 +107,70 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const [sigungu, setSigungu] = useState('');
   const [employment, setEmployment] = useState('');
   const [incomePct, setIncomePct] = useState<number>(0);
+  const [education, setEducation] = useState('');
+  const [married, setMarried] = useState<boolean | undefined>(undefined);
+  const [homeless, setHomeless] = useState<boolean | undefined>(undefined);
+  const [interests, setInterests] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  // AI state
+  const [aiResult, setAiResult] = useState<AiResult | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   const age = currentYear - birthYear;
   const canSubmit = birthYear > 0 && sido !== '' && employment !== '' && incomePct > 0;
 
+  const condition: UserCondition = {
+    birthYear, sido, sigungu, employment, incomePct,
+    education: education || undefined,
+    married,
+    homeless,
+    interests: interests.length > 0 ? interests : undefined,
+  };
+
   const matchResults = useMemo(() => {
     if (!submitted || !canSubmit) return [];
-    const cond: UserCondition = {
-      birthYear, sido, sigungu, employment, incomePct,
-    };
-    return matchPolicies(policies, cond);
-  }, [submitted, birthYear, sido, sigungu, employment, incomePct, policies, canSubmit]);
+    return matchPolicies(policies, condition);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitted, birthYear, sido, sigungu, employment, incomePct, education, married, homeless, interests, policies, canSubmit]);
 
   const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
+
+  const fetchAiRecommend = useCallback(async () => {
+    if (matchResults.length === 0) return;
+    setAiLoading(true);
+    setAiError('');
+    setAiResult(null);
+    try {
+      const res = await fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ policies: matchResults, condition }),
+      });
+      if (!res.ok) throw new Error('AI 추천 요청 실패');
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setAiResult(data);
+    } catch (e: any) {
+      setAiError(e.message || 'AI 추천을 불러올 수 없습니다');
+    } finally {
+      setAiLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matchResults]);
+
+  const toggleInterest = (v: string) => {
+    setInterests(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]);
+    setSubmitted(false);
+  };
+
+  const resetForm = () => {
+    setSubmitted(false);
+    setAiResult(null);
+    setAiError('');
+  };
 
   return (
     <>
@@ -101,12 +178,13 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
         <SectionTitle>조건 입력</SectionTitle>
 
         <div className="space-y-3">
+          {/* 출생연도 */}
           <div>
             <label className="block text-[12px] font-bold text-muted mb-1">출생연도</label>
             <input
               type="number"
               value={birthYear || ''}
-              onChange={(e) => { setBirthYear(+e.target.value); setSubmitted(false); }}
+              onChange={(e) => { setBirthYear(+e.target.value); resetForm(); }}
               placeholder="예: 2000"
               min={1970}
               max={currentYear}
@@ -117,12 +195,13 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             )}
           </div>
 
+          {/* 거주 지역 */}
           <div>
             <label className="block text-[12px] font-bold text-muted mb-1">거주 지역</label>
             <div className="flex gap-1.5">
               <select
                 value={sido}
-                onChange={(e) => { setSido(e.target.value); setSigungu(''); setSubmitted(false); }}
+                onChange={(e) => { setSido(e.target.value); setSigungu(''); resetForm(); }}
                 className={inputCls + ' flex-1 appearance-none'}
               >
                 <option value="">시/도</option>
@@ -130,7 +209,7 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
               </select>
               <select
                 value={sigungu}
-                onChange={(e) => { setSigungu(e.target.value); setSubmitted(false); }}
+                onChange={(e) => { setSigungu(e.target.value); resetForm(); }}
                 disabled={!sido}
                 className={inputCls + ' flex-1 appearance-none'}
               >
@@ -140,13 +219,14 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           </div>
 
+          {/* 현재 상태 */}
           <div>
             <label className="block text-[12px] font-bold text-muted mb-1.5">현재 상태</label>
             <div className="flex flex-wrap gap-1.5">
               {EMPLOYMENT_OPTIONS.map((o) => (
                 <button
                   key={o.value}
-                  onClick={() => { setEmployment(o.value); setSubmitted(false); }}
+                  onClick={() => { setEmployment(o.value); resetForm(); }}
                   className={chipCls(employment === o.value)}
                 >
                   {o.label}
@@ -155,13 +235,14 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           </div>
 
+          {/* 가구 소득 */}
           <div>
             <label className="block text-[12px] font-bold text-muted mb-1.5">가구 소득 수준</label>
             <div className="flex flex-wrap gap-1.5">
               {INCOME_OPTIONS.map((o) => (
                 <button
                   key={o.value}
-                  onClick={() => { setIncomePct(o.value); setSubmitted(false); }}
+                  onClick={() => { setIncomePct(o.value); resetForm(); }}
                   className={chipCls(incomePct === o.value)}
                 >
                   {o.label}
@@ -169,10 +250,95 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
               ))}
             </div>
           </div>
+
+          {/* 추가 조건 토글 */}
+          <button
+            onClick={() => setShowMore(!showMore)}
+            className="w-full text-[12px] font-semibold text-primary py-1.5 flex items-center justify-center gap-1"
+          >
+            {showMore ? '추가 조건 접기' : '추가 조건 펼치기 (더 정확한 매칭)'}
+            <svg className={`w-3 h-3 transition-transform ${showMore ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {showMore && (
+            <div className="space-y-3 pt-1 border-t border-line">
+              {/* 학력 */}
+              <div>
+                <label className="block text-[12px] font-bold text-muted mb-1">최종 학력</label>
+                <select
+                  value={education}
+                  onChange={(e) => { setEducation(e.target.value); resetForm(); }}
+                  className={inputCls + ' appearance-none'}
+                >
+                  {EDUCATION_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 결혼 여부 */}
+              <div>
+                <label className="block text-[12px] font-bold text-muted mb-1.5">결혼 여부</label>
+                <div className="flex gap-1.5">
+                  {[
+                    { value: undefined, label: '선택 안함' },
+                    { value: false, label: '미혼' },
+                    { value: true, label: '기혼' },
+                  ].map((o) => (
+                    <button
+                      key={String(o.value)}
+                      onClick={() => { setMarried(o.value as boolean | undefined); resetForm(); }}
+                      className={chipCls(married === o.value)}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 주택 소유 */}
+              <div>
+                <label className="block text-[12px] font-bold text-muted mb-1.5">주택 소유</label>
+                <div className="flex gap-1.5">
+                  {[
+                    { value: undefined, label: '선택 안함' },
+                    { value: true, label: '무주택' },
+                    { value: false, label: '유주택' },
+                  ].map((o) => (
+                    <button
+                      key={String(o.value)}
+                      onClick={() => { setHomeless(o.value as boolean | undefined); resetForm(); }}
+                      className={chipCls(homeless === o.value)}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 관심 분야 */}
+              <div>
+                <label className="block text-[12px] font-bold text-muted mb-1.5">관심 분야 (복수 선택)</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {INTEREST_OPTIONS.map((o) => (
+                    <button
+                      key={o.value}
+                      onClick={() => toggleInterest(o.value)}
+                      className={chipCls(interests.includes(o.value))}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <button
-          onClick={() => { if (canSubmit) setSubmitted(true); }}
+          onClick={() => { if (canSubmit) { setSubmitted(true); setAiResult(null); } }}
           disabled={!canSubmit}
           className={`w-full py-3 rounded-[var(--radius-sm)] text-white font-bold text-[14px] mt-4 transition-colors ${
             canSubmit ? 'bg-primary hover:bg-primary-d' : 'bg-line text-muted cursor-not-allowed'
@@ -228,6 +394,71 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
               <p className="text-[10px] opacity-50 mt-2">
                 * 대출·보증 상품은 금액에서 제외했습니다. 정책별 최대 금액 기준 단순 합산이며, 중복 수혜 제한·개인 조건에 따라 실제 수령액은 다릅니다.
               </p>
+            </div>
+          )}
+
+          {/* AI 추천 버튼 & 결과 */}
+          {matchResults.length > 0 && (
+            <div className="mb-3">
+              {!aiResult && !aiLoading && (
+                <button
+                  onClick={fetchAiRecommend}
+                  className="w-full py-3 bg-gradient-to-r from-violet-500 to-primary text-white font-bold text-[13px] rounded-[var(--radius)] hover:opacity-90 transition-opacity"
+                >
+                  AI가 내 상황에 맞는 TOP 5 추천해주기
+                </button>
+              )}
+
+              {aiLoading && (
+                <div className="w-full py-4 text-center">
+                  <div className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <p className="text-[12px] text-muted mt-2">AI가 분석 중...</p>
+                </div>
+              )}
+
+              {aiError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-[var(--radius-sm)] text-[12px] text-red-600">
+                  {aiError}
+                  <button onClick={fetchAiRecommend} className="ml-2 underline">재시도</button>
+                </div>
+              )}
+
+              {aiResult && (
+                <div className="bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200 rounded-[var(--radius)] p-4">
+                  <p className="text-[13px] font-extrabold text-violet-700 mb-2">
+                    AI 맞춤 추천 TOP {aiResult.picks?.length || 0}
+                  </p>
+
+                  {aiResult.tip && (
+                    <p className="text-[12px] text-violet-600 mb-3 leading-relaxed">
+                      {aiResult.tip}
+                    </p>
+                  )}
+
+                  <div className="space-y-2">
+                    {aiResult.picks?.map((pick, i) => {
+                      const policy = matchResults[pick.idx];
+                      if (!policy) return null;
+                      return (
+                        <div key={pick.idx} className="bg-white rounded-lg p-3 border border-violet-100">
+                          <div className="flex items-start gap-2">
+                            <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold text-white ${
+                              pick.priority === '높음' ? 'bg-violet-500' : 'bg-violet-300'
+                            }`}>
+                              {i + 1}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-bold text-text truncate">{policy.name}</p>
+                              <p className="text-[11px] text-violet-600 mt-0.5">{pick.reason}</p>
+                              <p className="text-[11px] text-muted mt-0.5">{policy.benefit.slice(0, 50)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
