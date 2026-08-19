@@ -112,6 +112,8 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const [homeless, setHomeless] = useState<boolean | undefined>(undefined);
   const [interests, setInterests] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [listCat, setListCat] = useState('전체');
+  const [listPage, setListPage] = useState(1);
 
   const age = currentYear - birthYear;
   const canSubmit = birthYear > 0 && sido !== '' && employment !== '' && incomePct > 0;
@@ -450,25 +452,73 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           )}
 
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-[16px] font-extrabold">
-              맞춤 정책 <span className="text-primary">{matchResults.length}건</span>
-            </h2>
-            <span className="text-[11px] text-muted">만 {age}세 · {sido}</span>
-          </div>
-          {matchResults.length === 0 ? (
-            <Card>
-              <div className="text-center py-4">
-                <p className="text-[13px] text-muted">
-                  조건에 맞는 정책이 없습니다. 조건을 변경해보세요.
-                </p>
-              </div>
-            </Card>
-          ) : (
-            <div className="space-y-2">
-              {matchResults.map((p) => <PolicyCard key={p.id} policy={p} />)}
-            </div>
-          )}
+          {/* 전체 정책 목록 */}
+          {matchResults.length > 0 && (() => {
+            const CATS = ['전체', ...Object.keys(CAT_COLORS)];
+            const catCounts: Record<string, number> = { '전체': matchResults.length };
+            matchResults.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+            const filtered = listCat === '전체' ? matchResults : matchResults.filter(p => p.category === listCat);
+            const PAGE_SIZE = 20;
+            const paged = filtered.slice(0, listPage * PAGE_SIZE);
+            const hasMore = paged.length < filtered.length;
+
+            return (
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-[16px] font-extrabold">
+                    전체 정책 <span className="text-primary">{filtered.length}건</span>
+                  </h2>
+                  <span className="text-[11px] text-muted">만 {age}세 · {sido}</span>
+                </div>
+
+                {/* 카테고리 필터 */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 mb-2 scrollbar-none">
+                  {CATS.map(c => (
+                    <button
+                      key={c}
+                      onClick={() => { setListCat(c); setListPage(1); }}
+                      className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${
+                        listCat === c
+                          ? 'bg-primary text-white border-primary'
+                          : 'border-line text-muted hover:border-primary/30 hover:text-text'
+                      }`}
+                    >
+                      {c} <span className="opacity-60">{catCounts[c] || 0}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {filtered.length === 0 ? (
+                  <Card>
+                    <div className="text-center py-4">
+                      <p className="text-[13px] text-muted">
+                        해당 카테고리에 맞는 정책이 없습니다.
+                      </p>
+                    </div>
+                  </Card>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      {paged.map(p => <PolicyCard key={p.id} policy={p} />)}
+                    </div>
+                    {hasMore && (
+                      <button
+                        onClick={() => setListPage(prev => prev + 1)}
+                        className="w-full mt-2 py-3 border border-line rounded-xl text-[13px] font-semibold text-muted hover:text-primary hover:border-primary/30 transition-colors"
+                      >
+                        더보기 ({paged.length} / {filtered.length})
+                      </button>
+                    )}
+                    {!hasMore && filtered.length > PAGE_SIZE && (
+                      <p className="text-center text-[11px] text-muted mt-2">
+                        전체 {filtered.length}개 정책을 모두 표시했습니다.
+                      </p>
+                    )}
+                  </>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
     </>
