@@ -15,50 +15,67 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing data' }, { status: 400 });
     }
 
-    // 상위 20개만 Groq에 전달 (토큰 절약)
-    const top = policies.slice(0, 20).map((p: any, i: number) => ({
-      idx: i,
-      name: p.name,
-      summary: p.summary,
-      benefit: p.benefit,
-      category: p.category,
-      org: p.org_name,
-      apply_end: p.apply_end,
+    const top = policies.slice(0, 15).map((p: any, i: number) => ({
+      i,
+      n: p.name,
+      s: p.summary?.slice(0, 60),
+      b: p.benefit?.slice(0, 40),
+      c: p.category,
     }));
 
     const userDesc = [
       `만 ${new Date().getFullYear() - condition.birthYear}세`,
       condition.sido + (condition.sigungu ? ` ${condition.sigungu}` : ''),
       condition.employment,
-      condition.incomePct < 999 ? `소득 중위${condition.incomePct}% 이하` : '',
-      condition.education ? `학력: ${condition.education}` : '',
+      condition.incomePct < 999 ? `소득 중위${condition.incomePct}%이하` : '',
+      condition.education || '',
       condition.married === true ? '기혼' : condition.married === false ? '미혼' : '',
       condition.homeless === true ? '무주택' : '',
-      condition.interests?.length ? `관심: ${condition.interests.join(', ')}` : '',
+      condition.interests?.length ? `관심:${condition.interests.join(',')}` : '',
     ].filter(Boolean).join(', ');
 
-    const prompt = `당신은 한국 청년정책 전문 상담사입니다. 사용자 조건과 정책 목록을 보고 가장 적합한 정책 5개를 추천해주세요.
+    const prompt = `You are a Korean youth policy expert. Pick the 5 best policies for this user. Output ONLY a JSON object, no other text.
 
-사용자: ${userDesc}
+User: ${userDesc}
 
-정책 목록:
-${JSON.stringify(top, null, 0)}
+Policies:
+${JSON.stringify(top)}
 
-응답 형식 (JSON만, 다른 텍스트 없이):
-{"picks":[{"idx":0,"reason":"추천 이유 1줄","priority":"높음|보통"},{"idx":1,"reason":"...","priority":"..."}],"tip":"전체적인 조언 1-2문장"}`;
+JSON format:
+{"picks":[{"idx":0,"reason":"한국어 추천이유","priority":"높음"},{"idx":1,"reason":"이유","priority":"보통"}],"tip":"한국어 조언 1문장"}
 
-    const chat = await groq.chat.completions.create({
-      model: 'qwen/qwen3.6-27b',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 800,
-      response_format: { type: 'json_object' },
-    });
+idx = "i" field. reason/tip in Korean. priority: "높음" or "보통". Pick up to 5.`;
 
-    const raw = chat.choices[0]?.message?.content || '{}';
-    const result = JSON.parse(raw);
+    const MODELS = ['openai/gpt-oss-20b', 'qwen/qwen3.6-27b'];
 
-    return NextResponse.json(result);
+    let raw = '';
+    for (const model of MODELS) {
+      try {
+        const chat = await groq.chat.completions.create({
+          model,
+          messages: [
+            { role: 'system', content: 'You output only valid JSON. No markdown fences, no thinking tags, no extra text.' },
+            { role: 'user', content: prompt },
+          ],
+          temperature: 0.2,
+          max_tokens: 800,
+        });
+        raw = chat.choices[0]?.message?.content || '';
+        // <think> 제거
+        raw = raw.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const result = JSON.parse(jsonMatch[0]);
+          return NextResponse.json(result);
+        }
+      } catch (err) {
+        console.error(`Model ${model} failed:`, err);
+        continue;
+      }
+    }
+
+    console.error('All models failed. Last raw:', raw.slice(0, 300));
+    return NextResponse.json({ error: 'AI 응답 파싱 실패' }, { status: 500 });
   } catch (e: any) {
     console.error('Groq API error:', e);
     return NextResponse.json(

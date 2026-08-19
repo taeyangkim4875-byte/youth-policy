@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
 import { SIDO, SIGUNGU } from '@/lib/regions';
 import { matchPolicies, annualBenefit } from '@/lib/matching';
+import { smartRecommend } from '@/lib/recommend';
 import type { Policy, UserCondition } from '@/lib/types';
 
 const EMPLOYMENT_OPTIONS = [
@@ -38,13 +39,14 @@ const INTEREST_OPTIONS = [
 ];
 
 const inputCls =
-  'w-full py-2.5 px-3 border border-line rounded-[var(--radius-sm)] text-[13px] bg-[#fbfcfe] font-semibold text-text outline-none focus:border-primary';
+  'w-full py-2.5 px-3 border border-line rounded-[var(--radius-sm)] text-[13px] bg-white font-semibold text-text outline-none focus:border-primary';
 const chipCls = (on: boolean) =>
-  `px-3 py-2 border rounded-full text-[12px] font-semibold cursor-pointer transition-all ${
+  `px-3 py-2 border rounded-lg text-[12px] font-medium cursor-pointer transition-all ${
     on
-      ? 'bg-primary border-primary text-white'
-      : 'border-line bg-[#fbfcfe] text-muted hover:border-primary/40'
+      ? 'bg-primary/10 border-primary text-primary'
+      : 'border-line bg-white text-muted hover:border-line2 hover:text-text'
   }`;
+const sectionLabel = 'block text-[12px] font-bold text-text mb-1.5';
 
 function formatMoney(amount: number): string {
   if (amount >= 10000) return `${Math.round(amount / 10000)}만`;
@@ -88,17 +90,6 @@ function calcBenefitSummary(policies: Policy[]) {
   return { totalMax, countWithAmount, countLoan, countUnknown, deadlineSoonTotal, deadlineSoonCount };
 }
 
-interface AiPick {
-  idx: number;
-  reason: string;
-  priority: string;
-}
-
-interface AiResult {
-  picks: AiPick[];
-  tip: string;
-}
-
 export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const currentYear = new Date().getFullYear();
 
@@ -112,12 +103,6 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const [homeless, setHomeless] = useState<boolean | undefined>(undefined);
   const [interests, setInterests] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
-  const [showMore, setShowMore] = useState(false);
-
-  // AI state
-  const [aiResult, setAiResult] = useState<AiResult | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState('');
 
   const age = currentYear - birthYear;
   const canSubmit = birthYear > 0 && sido !== '' && employment !== '' && incomePct > 0;
@@ -137,36 +122,7 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
   }, [submitted, birthYear, sido, sigungu, employment, incomePct, education, married, homeless, interests, policies, canSubmit]);
 
   const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
-
-  const fetchAiRecommend = useCallback(async (results: Policy[], cond: UserCondition) => {
-    if (results.length === 0) return;
-    setAiLoading(true);
-    setAiError('');
-    setAiResult(null);
-    try {
-      const res = await fetch('/api/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ policies: results, condition: cond }),
-      });
-      if (!res.ok) throw new Error('AI 추천 요청 실패');
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setAiResult(data);
-    } catch (e: any) {
-      setAiError(e.message || 'AI 추천을 불러올 수 없습니다');
-    } finally {
-      setAiLoading(false);
-    }
-  }, []);
-
-  // 매칭 결과 나오면 자동으로 AI 추천 호출
-  useEffect(() => {
-    if (matchResults.length > 0) {
-      fetchAiRecommend(matchResults, condition);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [matchResults]);
+  const recommend = useMemo(() => smartRecommend(matchResults, condition), [matchResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleInterest = (v: string) => {
     setInterests(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]);
@@ -175,8 +131,6 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
 
   const resetForm = () => {
     setSubmitted(false);
-    setAiResult(null);
-    setAiError('');
   };
 
   return (
@@ -184,10 +138,10 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
       <Card>
         <SectionTitle>조건 입력</SectionTitle>
 
+        {/* 기본 정보 */}
         <div className="space-y-3">
-          {/* 출생연도 */}
           <div>
-            <label className="block text-[12px] font-bold text-muted mb-1">출생연도</label>
+            <label className={sectionLabel}>출생연도</label>
             <input
               type="number"
               value={birthYear || ''}
@@ -202,9 +156,8 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             )}
           </div>
 
-          {/* 거주 지역 */}
           <div>
-            <label className="block text-[12px] font-bold text-muted mb-1">거주 지역</label>
+            <label className={sectionLabel}>거주 지역</label>
             <div className="flex gap-1.5">
               <select
                 value={sido}
@@ -226,25 +179,42 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           </div>
 
-          {/* 현재 상태 */}
-          <div>
-            <label className="block text-[12px] font-bold text-muted mb-1.5">현재 상태</label>
-            <div className="flex flex-wrap gap-1.5">
-              {EMPLOYMENT_OPTIONS.map((o) => (
-                <button
-                  key={o.value}
-                  onClick={() => { setEmployment(o.value); resetForm(); }}
-                  className={chipCls(employment === o.value)}
-                >
-                  {o.label}
-                </button>
-              ))}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={sectionLabel}>현재 상태</label>
+              <select
+                value={employment}
+                onChange={(e) => { setEmployment(e.target.value); resetForm(); }}
+                className={inputCls + ' appearance-none'}
+              >
+                <option value="">선택</option>
+                {EMPLOYMENT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={sectionLabel}>최종 학력</label>
+              <select
+                value={education}
+                onChange={(e) => { setEducation(e.target.value); resetForm(); }}
+                className={inputCls + ' appearance-none'}
+              >
+                {EDUCATION_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
             </div>
           </div>
+        </div>
 
-          {/* 가구 소득 */}
+        {/* 구분선 */}
+        <div className="border-t border-line my-3" />
+
+        {/* 소득·주거·결혼 */}
+        <div className="space-y-3">
           <div>
-            <label className="block text-[12px] font-bold text-muted mb-1.5">가구 소득 수준</label>
+            <label className={sectionLabel}>가구 소득 수준</label>
             <div className="flex flex-wrap gap-1.5">
               {INCOME_OPTIONS.map((o) => (
                 <button
@@ -258,94 +228,65 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           </div>
 
-          {/* 추가 조건 토글 */}
-          <button
-            onClick={() => setShowMore(!showMore)}
-            className="w-full text-[12px] font-semibold text-primary py-1.5 flex items-center justify-center gap-1"
-          >
-            {showMore ? '추가 조건 접기' : '추가 조건 펼치기 (더 정확한 매칭)'}
-            <svg className={`w-3 h-3 transition-transform ${showMore ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          {showMore && (
-            <div className="space-y-3 pt-1 border-t border-line">
-              {/* 학력 */}
-              <div>
-                <label className="block text-[12px] font-bold text-muted mb-1">최종 학력</label>
-                <select
-                  value={education}
-                  onChange={(e) => { setEducation(e.target.value); resetForm(); }}
-                  className={inputCls + ' appearance-none'}
-                >
-                  {EDUCATION_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 결혼 여부 */}
-              <div>
-                <label className="block text-[12px] font-bold text-muted mb-1.5">결혼 여부</label>
-                <div className="flex gap-1.5">
-                  {[
-                    { value: undefined, label: '선택 안함' },
-                    { value: false, label: '미혼' },
-                    { value: true, label: '기혼' },
-                  ].map((o) => (
-                    <button
-                      key={String(o.value)}
-                      onClick={() => { setMarried(o.value as boolean | undefined); resetForm(); }}
-                      className={chipCls(married === o.value)}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 주택 소유 */}
-              <div>
-                <label className="block text-[12px] font-bold text-muted mb-1.5">주택 소유</label>
-                <div className="flex gap-1.5">
-                  {[
-                    { value: undefined, label: '선택 안함' },
-                    { value: true, label: '무주택' },
-                    { value: false, label: '유주택' },
-                  ].map((o) => (
-                    <button
-                      key={String(o.value)}
-                      onClick={() => { setHomeless(o.value as boolean | undefined); resetForm(); }}
-                      className={chipCls(homeless === o.value)}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 관심 분야 */}
-              <div>
-                <label className="block text-[12px] font-bold text-muted mb-1.5">관심 분야 (복수 선택)</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {INTEREST_OPTIONS.map((o) => (
-                    <button
-                      key={o.value}
-                      onClick={() => toggleInterest(o.value)}
-                      className={chipCls(interests.includes(o.value))}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={sectionLabel}>결혼 여부</label>
+              <div className="flex gap-1.5">
+                {[
+                  { value: false, label: '미혼' },
+                  { value: true, label: '기혼' },
+                ].map((o) => (
+                  <button
+                    key={String(o.value)}
+                    onClick={() => { setMarried(o.value as boolean); resetForm(); }}
+                    className={chipCls(married === o.value) + ' flex-1'}
+                  >
+                    {o.label}
+                  </button>
+                ))}
               </div>
             </div>
-          )}
+            <div>
+              <label className={sectionLabel}>주택 소유</label>
+              <div className="flex gap-1.5">
+                {[
+                  { value: true, label: '무주택' },
+                  { value: false, label: '유주택' },
+                ].map((o) => (
+                  <button
+                    key={String(o.value)}
+                    onClick={() => { setHomeless(o.value as boolean); resetForm(); }}
+                    className={chipCls(homeless === o.value) + ' flex-1'}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 구분선 */}
+        <div className="border-t border-line my-3" />
+
+        {/* 관심 분야 */}
+        <div>
+          <label className={sectionLabel}>관심 분야 (복수 선택)</label>
+          <div className="flex flex-wrap gap-1.5">
+            {INTEREST_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                onClick={() => toggleInterest(o.value)}
+                className={chipCls(interests.includes(o.value))}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <button
-          onClick={() => { if (canSubmit) { setSubmitted(true); setAiResult(null); } }}
+          onClick={() => { if (canSubmit) setSubmitted(true); }}
           disabled={!canSubmit}
           className={`w-full py-3 rounded-[var(--radius-sm)] text-white font-bold text-[14px] mt-4 transition-colors ${
             canSubmit ? 'bg-primary hover:bg-primary-d' : 'bg-line text-muted cursor-not-allowed'
@@ -404,59 +345,39 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           )}
 
-          {/* AI 추천 결과 */}
-          {matchResults.length > 0 && (
-            <div className="mb-3">
-              {aiLoading && (
-                <div className="w-full py-4 text-center bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200 rounded-[var(--radius)]">
-                  <div className="inline-block w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-[12px] text-violet-600 font-semibold mt-2">AI가 맞춤 정책을 분석하고 있어요...</p>
-                </div>
-              )}
+          {/* 맞춤 추천 TOP 5 */}
+          {recommend.picks.length > 0 && (
+            <div className="bg-surface border border-line rounded-[var(--radius)] p-4 mb-3">
+              <p className="text-[13px] font-extrabold text-text mb-1">
+                맞춤 추천 TOP {recommend.picks.length}
+              </p>
 
-              {aiError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-[var(--radius-sm)] text-[12px] text-red-600">
-                  {aiError}
-                  <button onClick={() => fetchAiRecommend(matchResults, condition)} className="ml-2 underline">재시도</button>
-                </div>
-              )}
+              <p className="text-[12px] text-muted mb-3 leading-relaxed">
+                {recommend.tip}
+              </p>
 
-              {aiResult && (
-                <div className="bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200 rounded-[var(--radius)] p-4">
-                  <p className="text-[13px] font-extrabold text-violet-700 mb-2">
-                    AI 맞춤 추천 TOP {aiResult.picks?.length || 0}
-                  </p>
-
-                  {aiResult.tip && (
-                    <p className="text-[12px] text-violet-600 mb-3 leading-relaxed">
-                      {aiResult.tip}
-                    </p>
-                  )}
-
-                  <div className="space-y-2">
-                    {aiResult.picks?.map((pick, i) => {
-                      const policy = matchResults[pick.idx];
-                      if (!policy) return null;
-                      return (
-                        <div key={pick.idx} className="bg-white rounded-lg p-3 border border-violet-100">
-                          <div className="flex items-start gap-2">
-                            <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold text-white ${
-                              pick.priority === '높음' ? 'bg-violet-500' : 'bg-violet-300'
-                            }`}>
-                              {i + 1}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-bold text-text truncate">{policy.name}</p>
-                              <p className="text-[11px] text-violet-600 mt-0.5">{pick.reason}</p>
-                              <p className="text-[11px] text-muted mt-0.5">{policy.benefit.slice(0, 50)}</p>
-                            </div>
-                          </div>
+              <div className="space-y-2">
+                {recommend.picks.map((pick, i) => {
+                  const policy = matchResults[pick.idx];
+                  if (!policy) return null;
+                  return (
+                    <div key={pick.idx} className="bg-primary-bg/50 rounded-lg p-3 border border-line">
+                      <div className="flex items-start gap-2.5">
+                        <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
+                          pick.priority === '높음' ? 'bg-primary text-white' : 'bg-line text-muted'
+                        }`}>
+                          {i + 1}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-bold text-text truncate">{policy.name}</p>
+                          <p className="text-[11px] text-primary mt-0.5">{pick.reason}</p>
+                          <p className="text-[11px] text-muted mt-0.5">{policy.benefit.slice(0, 50)}</p>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
