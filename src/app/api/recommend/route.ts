@@ -48,7 +48,7 @@ ${JSON.stringify(top, null, 0)}
 {"picks":[{"idx":0,"reason":"추천 이유 1줄","priority":"높음|보통"},{"idx":1,"reason":"...","priority":"..."}],"tip":"전체적인 조언 1-2문장"}`;
 
     const chat = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: 'qwen/qwen3.6-27b',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
       max_tokens: 800,

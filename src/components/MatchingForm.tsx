@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
 import { SIDO, SIGUNGU } from '@/lib/regions';
@@ -138,8 +138,8 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
 
   const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
 
-  const fetchAiRecommend = useCallback(async () => {
-    if (matchResults.length === 0) return;
+  const fetchAiRecommend = useCallback(async (results: Policy[], cond: UserCondition) => {
+    if (results.length === 0) return;
     setAiLoading(true);
     setAiError('');
     setAiResult(null);
@@ -147,7 +147,7 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
       const res = await fetch('/api/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ policies: matchResults, condition }),
+        body: JSON.stringify({ policies: results, condition: cond }),
       });
       if (!res.ok) throw new Error('AI 추천 요청 실패');
       const data = await res.json();
@@ -157,6 +157,13 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
       setAiError(e.message || 'AI 추천을 불러올 수 없습니다');
     } finally {
       setAiLoading(false);
+    }
+  }, []);
+
+  // 매칭 결과 나오면 자동으로 AI 추천 호출
+  useEffect(() => {
+    if (matchResults.length > 0) {
+      fetchAiRecommend(matchResults, condition);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchResults]);
@@ -397,29 +404,20 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             </div>
           )}
 
-          {/* AI 추천 버튼 & 결과 */}
+          {/* AI 추천 결과 */}
           {matchResults.length > 0 && (
             <div className="mb-3">
-              {!aiResult && !aiLoading && (
-                <button
-                  onClick={fetchAiRecommend}
-                  className="w-full py-3 bg-gradient-to-r from-violet-500 to-primary text-white font-bold text-[13px] rounded-[var(--radius)] hover:opacity-90 transition-opacity"
-                >
-                  AI가 내 상황에 맞는 TOP 5 추천해주기
-                </button>
-              )}
-
               {aiLoading && (
-                <div className="w-full py-4 text-center">
-                  <div className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <p className="text-[12px] text-muted mt-2">AI가 분석 중...</p>
+                <div className="w-full py-4 text-center bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200 rounded-[var(--radius)]">
+                  <div className="inline-block w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-[12px] text-violet-600 font-semibold mt-2">AI가 맞춤 정책을 분석하고 있어요...</p>
                 </div>
               )}
 
               {aiError && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-[var(--radius-sm)] text-[12px] text-red-600">
                   {aiError}
-                  <button onClick={fetchAiRecommend} className="ml-2 underline">재시도</button>
+                  <button onClick={() => fetchAiRecommend(matchResults, condition)} className="ml-2 underline">재시도</button>
                 </div>
               )}
 
