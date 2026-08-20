@@ -62,8 +62,8 @@ export default function DeadlineBanner({ policies }: { policies: Policy[] }) {
             </Link>
           ))}
         </div>
-        <Link href="/deadline" className="shrink-0 text-[10px] text-muted pr-3 no-underline hover:text-primary transition-colors">
-          {urgent.length > 1 ? `${current + 1}/${items.length}` : '전체보기'}
+        <Link href="/deadline" className="shrink-0 flex items-center gap-1 text-[10px] font-bold text-primary pr-3 no-underline hover:underline">
+          {items.length}건 전체보기 &rsaquo;
         </Link>
       </div>
     </div>
