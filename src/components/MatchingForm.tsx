@@ -5,10 +5,9 @@ import Link from 'next/link';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
 import { SIDO, SIGUNGU } from '@/lib/regions';
-import { matchPolicies, annualBenefit } from '@/lib/matching';
+import { matchPolicies } from '@/lib/matching';
 import { smartRecommend } from '@/lib/recommend';
 import type { Policy, UserCondition } from '@/lib/types';
-import PolicySimulator from '@/components/PolicySimulator';
 
 const EMPLOYMENT_OPTIONS = [
   { value: '미취업', label: '미취업·구직중' },
@@ -58,46 +57,26 @@ const chipCls = (on: boolean) =>
   }`;
 const sectionLabel = 'block text-[12px] font-bold text-text mb-1.5';
 
-function formatMoney(amount: number): string {
-  if (amount >= 10000) return `${Math.round(amount / 10000)}만`;
-  return `${amount.toLocaleString()}`;
-}
-
-function calcBenefitSummary(policies: Policy[]) {
-  let totalMax = 0;
-  let countWithAmount = 0;
-  let countLoan = 0;
-  let countUnknown = 0;
-  let deadlineSoonTotal = 0;
-  let deadlineSoonCount = 0;
+function calcSummary(policies: Policy[]) {
   const now = Date.now();
   const thirtyDays = 30 * 86400000;
+  const catCounts: Record<string, number> = {};
+  let deadlineSoonCount = 0;
 
   for (const p of policies) {
-    const amount = annualBenefit(p);
-
-    if (p.benefit_type === 'loan') {
-      countLoan++;
-      continue;
-    }
-
-    if (amount > 0) {
-      totalMax += amount;
-      countWithAmount++;
-
-      if (p.apply_end) {
-        const diff = new Date(p.apply_end).getTime() - now;
-        if (diff >= 0 && diff <= thirtyDays) {
-          deadlineSoonTotal += amount;
-          deadlineSoonCount++;
-        }
-      }
-    } else {
-      countUnknown++;
+    catCounts[p.category] = (catCounts[p.category] || 0) + 1;
+    if (p.apply_end) {
+      const diff = new Date(p.apply_end).getTime() - now;
+      if (diff >= 0 && diff <= thirtyDays) deadlineSoonCount++;
     }
   }
 
-  return { totalMax, countWithAmount, countLoan, countUnknown, deadlineSoonTotal, deadlineSoonCount };
+  // 상위 3개 카테고리
+  const topCats = Object.entries(catCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  return { topCats, deadlineSoonCount };
 }
 
 export default function MatchingForm({ policies }: { policies: Policy[] }) {
@@ -133,7 +112,7 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitted, birthYear, sido, sigungu, employment, incomePct, education, married, homeless, interests, policies, canSubmit]);
 
-  const summary = useMemo(() => calcBenefitSummary(matchResults), [matchResults]);
+  const summary = useMemo(() => calcSummary(matchResults), [matchResults]);
   const recommend = useMemo(() => smartRecommend(matchResults, condition), [matchResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleInterest = (v: string) => {
@@ -320,42 +299,31 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
           {/* 결과 요약 카드 */}
           {matchResults.length > 0 && (
             <div className="bg-primary text-white rounded-[var(--radius)] p-4 mb-3">
-              <p className="text-[12px] font-semibold opacity-80 mb-1">
-                매칭된 정책 <span className="font-extrabold">{matchResults.length}건</span>
+              <p className="text-[13px] font-semibold opacity-80">
+                {sido} · 만 {age}세 기준
+              </p>
+              <p className="text-[28px] font-extrabold leading-tight mt-1">
+                {matchResults.length}건의 정책을 찾았어요
               </p>
 
-              {summary.countWithAmount > 0 ? (
-                <>
-                  <p className="text-[12px] opacity-80 mt-1">
-                    금액 확인된 {summary.countWithAmount}건 기준
-                  </p>
-                  <p className="text-[28px] font-extrabold leading-tight">
-                    연 최대 약 {formatMoney(summary.totalMax)}원
-                  </p>
-                </>
-              ) : (
-                <p className="text-[16px] font-extrabold leading-tight mt-1">
-                  상세 금액은 각 정책을 확인하세요
-                </p>
+              {summary.topCats.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {summary.topCats.map(([cat, count]) => (
+                    <span key={cat} className="text-[11px] font-semibold bg-white/15 rounded-md px-2 py-1">
+                      {cat} {count}건
+                    </span>
+                  ))}
+                </div>
               )}
-
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[11px] font-medium opacity-80">
-                {summary.countUnknown > 0 && <span>금액 미정 {summary.countUnknown}건</span>}
-                {summary.countLoan > 0 && <span>대출/보증 {summary.countLoan}건 (금액 미포함)</span>}
-              </div>
 
               {summary.deadlineSoonCount > 0 && (
                 <div className="mt-3 bg-white/15 rounded-lg p-2.5">
                   <p className="text-[12px] font-bold">
-                    30일 내 마감 {summary.deadlineSoonCount}건 · {formatMoney(summary.deadlineSoonTotal)}원
+                    30일 내 마감 {summary.deadlineSoonCount}건
                   </p>
                   <p className="text-[11px] opacity-80 mt-0.5">놓치면 다음 모집까지 기다려야 해요</p>
                 </div>
               )}
-
-              <p className="text-[10px] opacity-50 mt-2">
-                * 대출·보증 상품은 금액에서 제외했습니다. 정책별 최대 금액 기준 단순 합산이며, 중복 수혜 제한·개인 조건에 따라 실제 수령액은 다릅니다.
-              </p>
             </div>
           )}
 
@@ -452,14 +420,6 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
                   );
                 })}
               </div>
-            </div>
-          )}
-
-          {/* 정책 조합 시뮬레이터 */}
-          {matchResults.length > 0 && (
-            <div className="mb-3">
-              <p className="text-[14px] font-extrabold text-text mb-2">정책 조합 시뮬레이터</p>
-              <PolicySimulator policies={matchResults} />
             </div>
           )}
 
