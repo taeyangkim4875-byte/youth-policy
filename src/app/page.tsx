@@ -1,4 +1,5 @@
 import MatchingForm from '@/components/MatchingForm';
+import QuickMatch from '@/components/QuickMatch';
 import DeadlineBanner from '@/components/DeadlineBanner';
 import { WebAppJsonLd, FaqJsonLd } from '@/components/JsonLd';
 import { fetchAllPolicies } from '@/lib/supabase';
@@ -194,6 +195,15 @@ export default async function HomePage() {
       </div>
 
       <DeadlineBanner policies={policies} />
+
+      <QuickMatch policies={policies} />
+
+      {/* 구분선 */}
+      <div className="flex items-center gap-3 my-4">
+        <div className="flex-1 h-px bg-line" />
+        <span className="text-[11px] text-muted font-semibold">또는 조건을 직접 입력</span>
+        <div className="flex-1 h-px bg-line" />
+      </div>
 
       <MatchingForm policies={policies} />
 
