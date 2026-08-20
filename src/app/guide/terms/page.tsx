@@ -50,7 +50,7 @@ const TERMS = [
     simple: '정부가 내 적금에 추가로 넣어주는 돈',
     detail:
       '청년도약계좌, 청년미래적금 등에서 내가 매월 납입하면 정부가 추가 금액을 넣어줍니다. 소득이 낮을수록 기여금이 많아집니다.',
-    example: '도약계좌 월 70만 원 또는 미래적금 월 50만 원 납입 시 정부가 월 2.5~4만 원 추가 지급',
+    example: '도약계좌 월 70만 원 납입 시 정부기여금 지급. 금액은 소득 구간에 따라 다름. 서민금융진흥원(kinfa.or.kr)에서 확인',
   },
   {
     term: '선착순 모집',
@@ -70,7 +70,7 @@ const TERMS = [
     term: '공공임대 / 행복주택',
     simple: '정부·LH가 시세보다 싸게 빌려주는 주택',
     detail:
-      '시세 대비 60~80% 수준의 저렴한 임대료로 거주할 수 있습니다. 청년, 신혼부부, 고령자 등 대상별 유형이 있습니다. LH 마이홈에서 모집 공고를 확인하세요.',
+      '시세 대비 60~80% 수준의 저렴한 임대료로 거주할 수 있습니다. 청년, 신혼부부, 고령자 등 대상별 유형이 있습니다. 모집 공고는 LH 마이홈(myhome.go.kr)에서 확인할 수 있어요.',
     example: null,
   },
 ];
@@ -99,6 +99,9 @@ export default function TermsGuidePage() {
       {/* 2026 중위소득 빠른 참조표 */}
       <Card>
         <h2 className="text-base font-bold mb-3">2026년 기준 중위소득표 (1인 가구)</h2>
+        <p className="text-[11px] text-primary-d bg-primary-bg rounded-lg p-2.5 mb-3">
+          아래 금액은 보건복지부 고시 기준입니다. 매년 변경되므로 최신 금액은 복지로(bokjiro.go.kr)에서 확인하세요.
+        </p>
         <div className="overflow-x-auto">
           <table className="w-full text-[12px]">
             <thead>
@@ -143,7 +146,11 @@ export default function TermsGuidePage() {
           </table>
         </div>
         <p className="text-[10px] text-muted mt-2">
-          * 2026년 고시 기준이며, 가구원 수에 따라 달라집니다.
+          * 위 금액은 1인 가구 기준입니다. 가구원 수가 많을수록 기준이 높아집니다. 정확한 금액은{' '}
+          <a href="https://www.bokjiro.go.kr" target="_blank" rel="noopener noreferrer" className="underline">
+            복지로
+          </a>
+          에서 확인하세요.
         </p>
       </Card>
 
@@ -181,7 +188,33 @@ export default function TermsGuidePage() {
       </div>
 
       <div className="mt-4 p-3 bg-green-bg rounded-xl text-[11px] text-muted leading-relaxed">
-        본 정보는 참고용이며, 정확한 기준은 각 정책의 공식 안내를 확인하세요.
+        <p>본 정보는 참고용이며, 정확한 기준은 각 정책의 공식 안내를 확인하세요.</p>
+        <ul className="mt-2 space-y-0.5 list-none p-0">
+          <li>
+            · 복지로:{' '}
+            <a href="https://www.bokjiro.go.kr" target="_blank" rel="noopener noreferrer" className="underline">
+              bokjiro.go.kr
+            </a>
+          </li>
+          <li>
+            · 온통청년:{' '}
+            <a href="https://www.youthcenter.go.kr" target="_blank" rel="noopener noreferrer" className="underline">
+              youthcenter.go.kr
+            </a>
+          </li>
+          <li>
+            · LH 마이홈:{' '}
+            <a href="https://www.myhome.go.kr" target="_blank" rel="noopener noreferrer" className="underline">
+              myhome.go.kr
+            </a>
+          </li>
+          <li>
+            · 정부24:{' '}
+            <a href="https://www.gov.kr" target="_blank" rel="noopener noreferrer" className="underline">
+              gov.kr
+            </a>
+          </li>
+        </ul>
       </div>
     </>
   );

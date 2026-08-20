@@ -4,7 +4,7 @@ import { FaqJsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: '서울 청년이면 이거 다 받아 — 연 최대 500만 원 절약 가이드',
+  title: '서울 청년이면 이거 다 받아 — 동시에 받을 수 있는 정책 조합 정리',
   description:
     '서울 거주 청년이 동시에 받을 수 있는 정책 조합을 정리했습니다. 월세 지원, 이사비, 교통비, 적금 기여금까지 실제 수령 경험 기반.',
 };
@@ -16,7 +16,7 @@ export default function SeoulGuidePage() {
         items={[
           {
             q: '서울 청년이 동시에 받을 수 있는 정책이 있나요?',
-            a: '네. 월세 지원, 이사비, 교통비, 청년미래적금 등은 중복 수혜가 가능합니다. 조건에 따라 연 최대 500만 원 이상 혜택을 받을 수 있습니다.',
+            a: '네. 월세 지원, 이사비, 교통비, 청년미래적금 등은 중복 수혜가 가능합니다. 개인 조건에 따라 연 약 300~400만 원대 혜택을 받을 수 있습니다.',
           },
           {
             q: '서울 월세 지원 경쟁률이 높나요?',
@@ -39,10 +39,10 @@ export default function SeoulGuidePage() {
       {/* 총액 요약 */}
       <div className="bg-primary text-white rounded-[var(--radius)] p-4 mb-3">
         <p className="text-[12px] font-semibold opacity-80 mb-1">서울 거주 무주택 청년 기준</p>
-        <p className="text-[28px] font-extrabold leading-tight">연 최대 약 500만 원</p>
-        <p className="text-[12px] opacity-80 mt-1">월세 + 이사비 + 적금 기여금 합산 (중복 수혜 가능)</p>
+        <p className="text-[28px] font-extrabold leading-tight">연 약 300~400만 원대</p>
+        <p className="text-[12px] opacity-80 mt-1">월세 + 이사비 + 적금 기여금 + 교통비 합산 (중복 수혜 가능)</p>
         <p className="text-[10px] opacity-60 mt-2">
-          * 개인 조건에 따라 실제 수령액은 다를 수 있습니다.
+          * 개인 조건에 따라 다름 — 아래 시뮬레이션은 최대치 기준입니다.
         </p>
       </div>
 
@@ -61,10 +61,13 @@ export default function SeoulGuidePage() {
               최대 12개월, 총 240만 원 · 무주택 · 중위소득 150% 이하
             </p>
             <div className="bg-green-bg rounded-lg p-2 mt-2 text-[11px] text-green">
-              <strong>내 경험:</strong> 관악구 서울대입구에 살 때 10개월간 받았어요 (총 200만 원).
-              학원에서 취업 준비 중이었는데, 경쟁은 생각보다 심하지 않았습니다.
-              주민센터 방문해서 신청했어요.
+              <strong>내 경험:</strong> 관악구 살 때 10개월간 받았어요 (총 200만 원).
+              취업 준비 중이었는데 경쟁은 생각보다 심하지 않았거든요.
+              주민센터에서 신청했어요.
             </div>
+            <p className="text-[11px] text-muted mt-1.5">
+              <a href="https://housing.seoul.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">서울주거포털</a>에서 모집 일정 확인
+            </p>
           </div>
 
           {/* 정책 2 */}
@@ -78,39 +81,48 @@ export default function SeoulGuidePage() {
               1회 지원 · 무주택 · 중위소득 150% 이하
             </p>
             <div className="bg-green-bg rounded-lg p-2 mt-2 text-[11px] text-green">
-              <strong>내 경험:</strong> 20만 원 받았습니다. 선착순이라 빨리 신청하는 게 좋아요.
-              직장인이 아닐 때 소득 기준이 넉넉해서 쉽게 통과했어요.
+              <strong>내 경험:</strong> 20만 원 받았어요. 선착순이라 빨리 신청하는 게 좋거든요.
+              직장인 아닐 때 소득 기준이 넉넉해서 쉽게 통과했어요.
             </div>
+            <p className="text-[11px] text-muted mt-1.5">
+              <a href="https://housing.seoul.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">서울주거포털</a>에서 모집 일정 확인
+            </p>
           </div>
 
           {/* 정책 3 */}
           <div className="border border-line rounded-xl p-3">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-green-bg text-green">금융</span>
-              <span className="text-[12px] font-extrabold text-green">월 최대 4만 원</span>
+              <span className="text-[12px] font-extrabold text-green">정부기여금 지급</span>
             </div>
             <h3 className="text-[14px] font-extrabold text-text">청년미래적금 (정부기여금)</h3>
             <p className="text-[12px] text-muted mt-1">
-              5년 만기 · 연 최대 48만 원 기여금 · 전국
+              5년 만기 · 정부기여금 지급 (금액은 소득에 따라 다름) · 전국
             </p>
             <div className="bg-green-bg rounded-lg p-2 mt-2 text-[11px] text-green">
-              <strong>내 경험:</strong> 도약계좌를 3년 하다가 갈아탔어요 (갈아타기는 8/6 종료됨).
-              기여금이 더 크고 금리도 높아서요.{' '}
+              <strong>내 경험:</strong> 도약계좌 3년 하다가 갈아탔어요 (갈아타기는 8/6 종료됨).
+              기여금이 더 커서 갈아탄 거예요.{' '}
               <Link href="/guide/finance" className="text-primary no-underline hover:underline">
                 자세한 비교 →
               </Link>
             </div>
+            <p className="text-[11px] text-muted mt-1.5">
+              <a href="https://www.kinfa.or.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">서민금융진흥원</a>에서 기여금 상세 확인
+            </p>
           </div>
 
           {/* 정책 4 */}
           <div className="border border-line rounded-xl p-3">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#e0f2fe] text-[#0369a1]">교통</span>
-              <span className="text-[12px] font-extrabold text-green">월 최대 6.5만 원</span>
+              <span className="text-[12px] font-extrabold text-green">대중교통비 환급</span>
             </div>
             <h3 className="text-[14px] font-extrabold text-text">서울시 청년 교통비 지원 (K-패스)</h3>
             <p className="text-[12px] text-muted mt-1">
-              대중교통 이용 시 환급 · 연 최대 78만 원
+              대중교통비 환급 (이용 금액에 따라 다름)
+            </p>
+            <p className="text-[11px] text-muted mt-1.5">
+              <a href="https://www.k-pass.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">K-패스 공식 사이트</a>에서 환급률 확인
             </p>
           </div>
         </div>
@@ -119,6 +131,9 @@ export default function SeoulGuidePage() {
       {/* 합산 시뮬레이션 */}
       <Card>
         <h2 className="text-base font-bold mb-3">연간 합산 시뮬레이션</h2>
+        <p className="text-[11px] text-muted mb-3 leading-relaxed">
+          아래 금액은 최대치 기준이며, 실제 수령액은 개인 자격·소득에 따라 크게 다릅니다. 정확한 금액은 각 정책의 공식 사이트에서 확인하세요.
+        </p>
         <div className="space-y-2 text-[13px]">
           <div className="flex justify-between items-center py-2 border-b border-line2">
             <span className="text-text">월세 지원 (12개월)</span>
@@ -184,20 +199,20 @@ export default function SeoulGuidePage() {
           <div className="bg-amber-bg rounded-lg p-2.5">
             <strong className="text-amber">&ldquo;직장인은 안 되는 줄 알았어요&rdquo;</strong>
             <p className="text-muted mt-0.5">
-              월세 지원은 재직자도 소득 기준만 맞으면 가능합니다. 저도 처음에 직장인은 안 되는 줄 알고 놓칠 뻔했어요.
+              월세 지원은 재직자도 소득 기준만 맞으면 돼요. 저도 직장인은 안 되는 줄 알고 놓칠 뻔했거든요.
             </p>
           </div>
           <div className="bg-amber-bg rounded-lg p-2.5">
             <strong className="text-amber">&ldquo;선착순이라 못 받을 줄 알았어요&rdquo;</strong>
             <p className="text-muted mt-0.5">
-              이사비는 선착순이지만, 모집 첫날 신청하면 거의 됩니다. 알림 설정 해두세요.
+              이사비는 선착순인데, 모집 첫날 신청하면 거의 돼요. 알림 설정 해두는 게 좋아요.
             </p>
           </div>
           <div className="bg-amber-bg rounded-lg p-2.5">
             <strong className="text-amber">&ldquo;서류가 복잡할 줄 알았어요&rdquo;</strong>
             <p className="text-muted mt-0.5">
-              주민등록등본, 소득증빙만 있으면 대부분 신청 가능합니다.
-              정부24에서 온라인 발급하면 10분이면 끝나요.
+              주민등록등본, 소득증빙만 있으면 대부분 신청 가능해요.
+              정부24에서 온라인 발급하면 10분이면 끝나거든요.
             </p>
           </div>
         </div>
@@ -233,6 +248,25 @@ export default function SeoulGuidePage() {
       <div className="mt-4 p-3 bg-green-bg rounded-xl text-[11px] text-muted leading-relaxed">
         본 정보는 참고용이며, 최종 자격·신청은 공식 사이트에서 확인하세요.
         <br />작성자: 김태양 · 서울 거주 당시 월세 지원·이사비·도약계좌 실제 수령 경험
+      </div>
+
+      {/* 출처 */}
+      <div className="mt-3 p-3 bg-surface border border-line rounded-[var(--radius)] text-[11px] text-muted leading-relaxed">
+        <p className="font-bold mb-1.5">출처 및 참고 사이트</p>
+        <ul className="space-y-1 list-disc list-inside">
+          <li>
+            서울주거포털:{' '}
+            <a href="https://housing.seoul.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://housing.seoul.go.kr</a>
+          </li>
+          <li>
+            온통청년:{' '}
+            <a href="https://www.youthcenter.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://www.youthcenter.go.kr</a>
+          </li>
+          <li>
+            서민금융진흥원:{' '}
+            <a href="https://www.kinfa.or.kr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://www.kinfa.or.kr</a>
+          </li>
+        </ul>
       </div>
     </>
   );

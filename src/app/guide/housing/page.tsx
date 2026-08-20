@@ -61,15 +61,10 @@ export default function HousingGuidePage() {
       <Card>
         <h2 className="text-lg font-bold mb-3">들어가며</h2>
         <p className="text-sm text-text leading-relaxed mb-3">
-          저는 서울 관악구 서울대입구역 근처에 살면서 취업 준비를 하던
-          시기에 여러 청년 주거정책의 도움을 받았습니다. 직장인이 아닌
-          상태에서 서울 월세를 감당하는 건 쉽지 않았는데, 정책을 알고
-          나서 한결 숨통이 트였습니다.
+          서울 관악구에 살면서 취업 준비하던 시기에 주거정책 덕을 많이 봤어요. 수입 없이 월세 내는 게 진짜 빠듯했는데, 정책 알고 나서 한결 나아졌거든요.
         </p>
         <p className="text-sm text-text leading-relaxed">
-          문제는 &ldquo;이런 정책이 있는지 자체를 모르는&rdquo;
-          사람이 너무 많다는 겁니다. 자격이 되는데도 놓치는 분들을
-          위해, 제가 직접 받아본 정책들과 신청 팁을 정리합니다.
+          근데 주변을 보면 &ldquo;이런 게 있는 줄 몰랐다&rdquo;는 사람이 너무 많아요. 자격 되는데 그냥 넘기는 분들이 많아서, 직접 받아본 정책이랑 신청 팁을 정리해봤어요.
         </p>
       </Card>
 
@@ -94,15 +89,17 @@ export default function HousingGuidePage() {
 
         <h3 className="text-sm font-bold mb-2">솔직한 후기</h3>
         <p className="text-sm text-text leading-relaxed mb-3">
-          직장인이 아닐 때 서울 월세는 정말 부담이 큽니다. 월 20만 원이
-          적어 보일 수 있지만, 10개월이면 200만 원이고 당시 제 월세의
-          상당 부분을 커버해줬습니다. 특히 취업 준비 기간처럼 수입이
-          없을 때 이런 지원은 심리적으로도 큰 힘이 됩니다.
+          월 20만 원이 별거 아닌 것 같지만, 10개월이면 200만 원이에요. 수입 없이 월세 내던 시기라 이게 진짜 컸거든요. 심리적으로도 &ldquo;나라에서 이렇게라도 도와주는구나&rdquo; 싶어서 힘이 됐어요.
         </p>
         <p className="text-sm text-text leading-relaxed">
-          경쟁이 심하지는 않았지만, 예산이 소진되면 조기 마감되므로
-          신청 기간이 열리면 바로 준비하는 게 좋습니다.
+          경쟁이 생각보다 심하진 않았는데, 예산 소진되면 조기 마감되니까 신청 기간 열리면 바로 준비하는 게 좋아요.
         </p>
+        <div className="mt-2 text-[11px] text-muted">
+          최신 모집 공고:{' '}
+          <a href="https://housing.seoul.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline">
+            서울주거포털
+          </a>
+        </div>
       </Card>
 
       <Card>
@@ -115,15 +112,17 @@ export default function HousingGuidePage() {
         </div>
 
         <p className="text-sm text-text leading-relaxed mb-3">
-          이사할 때 이삿짐 비용, 중개수수료 등이 한꺼번에 나가는데,
-          이사비 20만 원이라도 받으면 부담이 줄어듭니다. 선착순이라
-          접수 기간 시작일을 미리 체크해두는 게 포인트입니다.
+          이사하면 이삿짐 비용, 중개수수료가 한꺼번에 나가는데, 20만 원이라도 받으면 좀 낫거든요. 핵심은 선착순이라 접수 시작일을 미리 체크해두는 거예요.
         </p>
         <p className="text-sm text-text leading-relaxed">
-          당시 저도 직장인이 아닌 상태에서 지원을 받았는데, 소득이
-          낮을수록 오히려 자격이 되는 경우가 많으니 &ldquo;나는
-          안 될 거야&rdquo;라고 미리 포기하지 마세요.
+          직장인 아닌 상태에서도 받았어요. 소득 낮을수록 오히려 자격 되는 경우가 많으니까, &ldquo;나는 안 될 거야&rdquo; 하고 넘기지 마세요.
         </p>
+        <div className="mt-2 text-[11px] text-muted">
+          신청:{' '}
+          <a href="https://housing.seoul.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline">
+            서울주거포털
+          </a>
+        </div>
       </Card>
 
       <Card>
@@ -131,14 +130,10 @@ export default function HousingGuidePage() {
           청년도약계좌 → 청년미래적금 갈아탄 경험
         </h2>
         <p className="text-sm text-text leading-relaxed mb-3">
-          주거정책은 아니지만 목돈 마련과 직결되는 금융 정책도
-          함께 정리합니다. 저는 청년도약계좌에 <strong>월 70만 원씩
-          3년간</strong> 납입했고, 정부 기여금은 월 약 2만 5천 원을
-          받았습니다.
+          주거정책은 아닌데, 목돈 마련이랑 직결되는 거라 같이 정리해요. 청년도약계좌에 월 70만 원씩 3년 넣었고, 정부 기여금은 소득 구간에 따라 월 2~3만 원 정도 받았어요.
         </p>
         <p className="text-sm text-text leading-relaxed mb-3">
-          이후 청년미래적금이 출시됐을 때 만기까지의 총 수령액을
-          계산해보니 미래적금 쪽이 더 유리해서 갈아탔습니다.
+          나중에 청년미래적금 나왔을 때 만기 수령액 계산해보니 미래적금이 더 유리해서 갈아탔거든요.
         </p>
         <div className="bg-amber-bg rounded-xl p-3 text-xs text-text">
           <strong>참고:</strong> 도약계좌 → 미래적금 갈아타기는 <strong>2026년 8월 6일부로 종료</strong>되었습니다.
@@ -153,29 +148,25 @@ export default function HousingGuidePage() {
         </h2>
         <ol className="text-sm text-text leading-relaxed space-y-3 list-decimal pl-4">
           <li>
-            <strong>&ldquo;나는 해당 안 될 거야&rdquo;라고 넘기지 마세요.</strong>{' '}
-            저도 직장인이 아니라서 안 될 줄 알았는데, 오히려 소득이 낮으면
-            더 많은 정책에 해당됩니다.
+            <strong>&ldquo;나는 안 될 거야&rdquo; 하고 넘기지 마세요.</strong>{' '}
+            직장인 아니라서 안 될 줄 알았는데, 소득 낮으면 오히려 더 많은 정책에 해당돼요.
           </li>
           <li>
-            <strong>선착순 정책은 시작일에 바로 신청하세요.</strong>{' '}
-            이사비 지원처럼 선착순 마감되는 정책은 신청 기간이
-            공지되면 바로 서류를 준비해두는 게 좋습니다.
+            <strong>선착순은 시작일에 바로.</strong>{' '}
+            이사비처럼 선착순 마감되는 정책은 공지 나오면 바로 서류 준비해두세요.
           </li>
           <li>
-            <strong>주민등록등본은 미리 발급해두세요.</strong>{' '}
-            거의 모든 정책에서 주민등록등본을 요구합니다. 정부24에서
-            무료로 발급받을 수 있으니 미리 준비하면 시간을 아낍니다.
+            <strong>주민등록등본은 미리.</strong>{' '}
+            거의 모든 정책에서 요구해요.{' '}
+            <a href="https://www.gov.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline">정부24</a>에서 무료 발급 가능.
           </li>
           <li>
-            <strong>소득 기준은 &lsquo;가구&rsquo; 기준인 경우가 많습니다.</strong>{' '}
-            본인 소득만 보는 게 아니라 세대원 전체 소득을 보는
-            정책이 있으니, 건강보험료 납부확인서를 확인해보세요.
+            <strong>소득 기준이 &lsquo;가구&rsquo;인 경우가 많아요.</strong>{' '}
+            본인만 보는 게 아니라 세대원 전체 소득을 보는 정책도 있어요. 건강보험료 납부확인서 확인해보세요.
           </li>
           <li>
-            <strong>여러 정책을 동시에 받을 수 있습니다.</strong>{' '}
-            월세 지원과 이사비 지원은 별개 사업이므로 중복 수령이
-            가능했습니다. 하나만 받을 수 있다고 오해하지 마세요.
+            <strong>여러 정책 동시에 받을 수 있어요.</strong>{' '}
+            월세 지원이랑 이사비는 별개 사업이라 중복 수령 가능했어요. 하나만 된다고 오해하지 마세요.
           </li>
         </ol>
       </Card>
@@ -249,19 +240,14 @@ export default function HousingGuidePage() {
       </Card>
 
       <div className="mt-4 p-3 bg-green-bg rounded-xl text-xs text-muted leading-relaxed">
-        본 가이드는 개인 경험을 바탕으로 작성되었으며, 정책의 세부
-        조건은 연도·지자체에 따라 달라질 수 있습니다. 최종 확인은
-        각 정책의 공식 사이트에서 해주세요.
-        <br />
-        출처:{' '}
-        <a
-          href="https://www.youthcenter.go.kr"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary no-underline hover:underline"
-        >
-          한국고용정보원 온통청년
-        </a>
+        정책 세부 조건은 연도·지자체마다 달라요. 여기 적힌 금액도 바뀔 수 있으니 신청 전에 공식 사이트에서 꼭 확인하세요.
+        <div className="mt-2 space-y-0.5">
+          <span className="font-semibold block">공식 출처</span>
+          <a href="https://housing.seoul.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline block">서울주거포털</a>
+          <a href="https://www.youthcenter.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline block">온통청년</a>
+          <a href="https://www.myhome.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline block">LH 마이홈</a>
+          <a href="https://www.gov.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline block">정부24 (서류 발급)</a>
+        </div>
       </div>
 
       <div className="mt-4">

@@ -20,7 +20,7 @@ export default function FinanceGuidePage() {
           },
           {
             q: '청년도약계좌에서 청년미래적금으로 갈아탈 수 있나요?',
-            a: '2026년 8월 6일부로 도약계좌→미래적금 갈아타기 특례가 종료되었습니다. 현재는 갈아타기가 불가능하며, 신규로 청년미래적금에 가입하거나 도약계좌를 만기까지 유지하는 방법 중 선택해야 합니다.',
+            a: '2026년 8월 6일부로 도약계좌→미래적금 갈아타기 특례가 종료되었습니다. 현재는 갈아타기가 불가능하며, 신규로 청년미래적금에 가입하거나 도약계좌를 만기까지 유지하는 방법 중 선택해야 합니다. 최신 정보는 서민금융진흥원(kinfa.or.kr)에서 확인하세요.',
           },
           {
             q: '청년도약계좌 정부기여금은 얼마인가요?',
@@ -105,6 +105,9 @@ export default function FinanceGuidePage() {
             </tbody>
           </table>
         </div>
+        <p className="text-[10px] text-muted mt-2">
+          * 금리와 정부기여금은 은행·시기·소득 구간별로 달라집니다. 최신 금리와 기여금 조건은 가입 시 공식 사이트에서 확인하세요.
+        </p>
       </Card>
 
       {/* 5년 만기 시뮬레이션 */}
@@ -123,8 +126,8 @@ export default function FinanceGuidePage() {
             <p className="text-[11px] text-muted mt-1">원금 3,000만 + 기여금 240만 + 이자</p>
           </div>
         </div>
-        <p className="text-[10px] text-muted mt-2">
-          * 단순 추정치이며 실제 금리 변동에 따라 달라집니다.
+        <p className="text-[11px] text-amber font-semibold mt-2">
+          * 아래는 단순 추정치입니다. 금리 변동, 납입 금액에 따라 크게 달라지므로 참고만 하세요.
           정확한 계산은{' '}
           <a
             href="https://moduncalc.com/savings"
@@ -146,19 +149,19 @@ export default function FinanceGuidePage() {
         </div>
         <div className="space-y-3 text-[13px] text-text leading-relaxed">
           <p>
-            저는 청년도약계좌를 매월 70만 원씩 <strong>3년간 유지</strong>했습니다.
-            정부기여금은 월 약 2만 5천 원 정도 받았고, 3년간 약 90만 원 정도 쌓였습니다.
+            저는 청년도약계좌를 매월 70만 원씩 <strong>3년간 유지</strong>했어요.
+            정부기여금은 월 약 2만 5천 원 정도 받았고, 3년간 약 90만 원 정도 쌓였어요.
           </p>
           <p>
             그런데 2026년에 청년미래적금이 나오면서 계산해보니,
-            <strong>기여금이 월 4만 원으로 올라가고 금리도 더 높아서</strong> 남은 2년을
-            미래적금으로 가는 게 총 수령액이 더 컸습니다.
+            <strong>기여금도 더 크고 금리도 더 높아서</strong> 남은 2년을
+            미래적금으로 가는 게 총 수령액이 더 크더라고요.
           </p>
           <p>
-            물론 도약계좌를 해지하면 기존 기여금을 포기해야 해서 고민했지만,
+            도약계좌 해지하면 기존 기여금을 포기해야 해서 고민을 많이 했는데,
             남은 만기(2년)의 추가 기여금 + 금리 차이를 따져보니
-            <strong>갈아타는 게 약 50만 원 이상 이득</strong>이었습니다. 마감 전에 결정할 수
-            있어서 다행이었습니다.
+            <strong>갈아타는 게 약 50만 원 이상 이득</strong>이었어요. 마감 전에 결정할 수
+            있어서 다행이었어요.
           </p>
           <div className="bg-amber-bg rounded-lg p-3 text-[12px] text-amber">
             <strong>참고:</strong> 갈아타기 특례는 종료됐지만, 도약계좌를 새로 가입할지 미래적금을 선택할지는 여전히 중요한 선택입니다. 아래 비교를 참고하세요.
@@ -241,6 +244,25 @@ export default function FinanceGuidePage() {
       <div className="mt-4 p-3 bg-green-bg rounded-xl text-[11px] text-muted leading-relaxed">
         본 정보는 참고용이며, 정확한 상품 조건은 각 은행 및 공식 사이트에서 확인하세요.
         <br />작성자: 김태양 · 청년도약계좌 3년 유지 후 청년미래적금 전환 경험
+      </div>
+
+      <div className="mt-3 p-3 bg-surface border border-line rounded-[var(--radius)] text-[11px] text-muted leading-relaxed">
+        <p className="font-bold mb-1">출처 및 참고 링크</p>
+        <ul className="space-y-1 list-disc pl-4">
+          <li>
+            서민금융진흥원:{' '}
+            <a href="https://www.kinfa.or.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline">
+              kinfa.or.kr
+            </a>
+          </li>
+          <li>
+            온통청년:{' '}
+            <a href="https://www.youthcenter.go.kr" target="_blank" rel="noopener noreferrer" className="text-primary no-underline hover:underline">
+              youthcenter.go.kr
+            </a>
+          </li>
+          <li>각 시중 은행 앱에서 최신 금리 확인 가능</li>
+        </ul>
       </div>
     </>
   );

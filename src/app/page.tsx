@@ -197,67 +197,103 @@ export default async function HomePage() {
 
       <MatchingForm policies={policies} />
 
-      <div className="mt-5 space-y-2">
-        <Link
-          href="/guide/seoul"
-          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
-        >
-          <span className="text-[13px] font-bold text-text">
-            🏙️ 서울 청년이면 이거 다 받아 — 연 최대 500만 원
-          </span>
-          <p className="text-[11px] text-muted mt-0.5">
-            동시에 받을 수 있는 정책 조합 · 실제 수령 경험 기반
-          </p>
-        </Link>
+      {/* 가이드 섹션 */}
+      <div className="mt-5">
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-[15px] font-extrabold text-text">정책 가이드</h2>
+          <Link href="/guide" className="text-[11px] text-primary font-semibold no-underline hover:underline">
+            전체보기
+          </Link>
+        </div>
 
-        <Link
-          href="/guide/housing"
-          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
-        >
-          <span className="text-[13px] font-bold text-text">
-            🏠 청년 주거정책, 직접 받아본 후기와 신청 팁
-          </span>
-          <p className="text-[11px] text-muted mt-0.5">
-            월세 지원 200만 원, 이사비 20만 원 — 실제 수령 경험담
-          </p>
-        </Link>
+        {/* 인기 가이드 */}
+        <div className="space-y-2 mb-3">
+          <Link
+            href="/guide/seoul"
+            className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+          >
+            <span className="text-[13px] font-bold text-text">
+              서울 청년이면 이거 다 받아 — 동시 수혜 가능 정책 조합
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              월세·이사비·적금·교통비 중복 수령 가이드
+            </p>
+          </Link>
 
-        <Link
-          href="/guide/finance"
-          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
-        >
-          <span className="text-[13px] font-bold text-text">
-            💰 청년도약계좌 vs 청년미래적금 — 뭐가 유리할까?
-          </span>
-          <p className="text-[11px] text-muted mt-0.5">
-            3년 유지하다 갈아탄 실제 경험 · 만기 시뮬레이션
-          </p>
-        </Link>
+          <Link
+            href="/guide/housing"
+            className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+          >
+            <span className="text-[13px] font-bold text-text">
+              청년 주거정책 신청 가이드 — 월세 지원부터 전세임대까지
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              자격 요건·서류·신청 방법 한 번에 정리
+            </p>
+          </Link>
 
-        <Link
-          href="/guide/terms"
-          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
-        >
-          <span className="text-[13px] font-bold text-text">
-            📖 중위소득? 무주택? 정책 용어 쉽게 풀기
-          </span>
-          <p className="text-[11px] text-muted mt-0.5">
-            2026년 중위소득표 포함 · 헷갈리는 용어 9개 정리
-          </p>
-        </Link>
+          <Link
+            href="/guide/finance"
+            className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+          >
+            <span className="text-[13px] font-bold text-text">
+              청년도약계좌 vs 청년미래적금, 뭐가 유리할까?
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              기여금·금리·만기 금액 비교 정리
+            </p>
+          </Link>
+        </div>
 
+        {/* 상황별 */}
+        <p className="text-[11px] font-bold text-muted mb-1.5">상황별 가이드</p>
+        <div className="grid grid-cols-2 gap-1.5 mb-3">
+          <Link href="/guide/first-independence" className="bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text block">처음 독립할 때</span>
+            <span className="text-[10px] text-muted">전입신고부터 정책까지</span>
+          </Link>
+          <Link href="/guide/job-seeker" className="bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text block">취준생이라면</span>
+            <span className="text-[10px] text-muted">구직 중 받을 수 있는 정책</span>
+          </Link>
+          <Link href="/guide/first-job" className="bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text block">사회초년생이라면</span>
+            <span className="text-[10px] text-muted">첫 직장에서 챙길 정책</span>
+          </Link>
+          <Link href="/guide/newlywed" className="bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text block">결혼 준비 중이라면</span>
+            <span className="text-[10px] text-muted">신혼부부 정책 총정리</span>
+          </Link>
+        </div>
+
+        {/* 신청 실전 */}
+        <p className="text-[11px] font-bold text-muted mb-1.5">신청할 때 꼭 보세요</p>
+        <div className="space-y-1.5 mb-3">
+          <Link href="/guide/terms" className="flex items-center gap-2 bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text">중위소득? 무주택? 정책 용어 쉽게 풀기</span>
+          </Link>
+          <Link href="/guide/checklist" className="flex items-center gap-2 bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text">정책 신청 서류 준비 가이드</span>
+          </Link>
+          <Link href="/guide/common-mistakes" className="flex items-center gap-2 bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text">신청할 때 흔히 하는 실수 7가지</span>
+          </Link>
+          <Link href="/guide/income-check" className="flex items-center gap-2 bg-surface border border-line rounded-lg p-2.5 hover:border-primary/40 transition-colors no-underline">
+            <span className="text-[12px] font-bold text-text">내 소득이 중위소득 몇 %인지 확인하는 법</span>
+          </Link>
+        </div>
+
+        {/* 외부 도구 */}
         <a
           href="https://moduncalc.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="block bg-surface border border-line rounded-[var(--radius)] p-3.5 hover:border-primary/40 transition-colors no-underline"
+          className="block bg-surface border border-line rounded-[var(--radius)] p-3 hover:border-primary/40 transition-colors no-underline"
         >
-          <span className="text-[13px] font-bold text-text">
-            🧮 연봉 실수령액, 적금 이자, 대출 이자 계산기
+          <span className="text-[12px] font-bold text-text">
+            연봉 실수령액·적금 이자·대출 이자 계산기
           </span>
-          <p className="text-[11px] text-muted mt-0.5">
-            moduncalc.com — 82종 무료 계산기 모음
-          </p>
+          <span className="text-[10px] text-muted ml-1.5">moduncalc.com</span>
         </a>
       </div>
     </>
