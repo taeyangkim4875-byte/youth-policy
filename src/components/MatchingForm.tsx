@@ -1,13 +1,45 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Card, { SectionTitle } from '@/components/Card';
 import PolicyCard from '@/components/PolicyCard';
+import PolicyCompare from '@/components/PolicyCompare';
 import { SIDO, SIGUNGU } from '@/lib/regions';
 import { matchPolicies } from '@/lib/matching';
 import { smartRecommend } from '@/lib/recommend';
 import type { Policy, UserCondition } from '@/lib/types';
+
+const STORAGE_KEY = 'youth-policy-condition';
+
+interface SavedCondition {
+  birthYear: number;
+  sido: string;
+  sigungu: string;
+  employment: string;
+  incomePct: number;
+  education: string;
+  married?: boolean;
+  homeless?: boolean;
+  interests: string[];
+  savedAt: string;
+}
+
+function loadCondition(): SavedCondition | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function saveCondition(c: SavedCondition) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch {}
+}
+
+function clearCondition() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+}
 
 const EMPLOYMENT_OPTIONS = [
   { value: '미취업', label: '미취업·구직중' },
@@ -94,6 +126,26 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
   const [submitted, setSubmitted] = useState(false);
   const [listCat, setListCat] = useState('전체');
   const [listPage, setListPage] = useState(1);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // localStorage에서 조건 불러오기
+  useEffect(() => {
+    const saved = loadCondition();
+    if (saved) {
+      setBirthYear(saved.birthYear);
+      setSido(saved.sido);
+      setSigungu(saved.sigungu);
+      setEmployment(saved.employment);
+      setIncomePct(saved.incomePct);
+      setEducation(saved.education);
+      setMarried(saved.married);
+      setHomeless(saved.homeless);
+      setInterests(saved.interests || []);
+    }
+    setLoaded(true);
+  }, []);
 
   const age = currentYear - birthYear;
   const canSubmit = birthYear > 0 && sido !== '' && employment !== '' && incomePct > 0;
@@ -279,7 +331,15 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
         </div>
 
         <button
-          onClick={() => { if (canSubmit) setSubmitted(true); }}
+          onClick={() => {
+            if (canSubmit) {
+              setSubmitted(true);
+              saveCondition({
+                birthYear, sido, sigungu, employment, incomePct, education,
+                married, homeless, interests, savedAt: new Date().toISOString(),
+              });
+            }
+          }}
           disabled={!canSubmit}
           className={`w-full py-3 rounded-[var(--radius-sm)] text-white font-bold text-[14px] mt-4 transition-colors ${
             canSubmit ? 'bg-primary hover:bg-primary-d' : 'bg-line text-muted cursor-not-allowed'
@@ -288,9 +348,24 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
           내 정책 찾기
         </button>
 
-        <p className="text-[11px] text-muted text-center mt-2">
-          입력한 정보는 저장하지 않고 조회에만 사용해요
-        </p>
+        <div className="flex items-center justify-center gap-3 mt-2">
+          <p className="text-[11px] text-muted">
+            조건은 브라우저에 저장되어 다음 방문 시 자동 입력돼요
+          </p>
+          {loaded && loadCondition() && (
+            <button
+              onClick={() => {
+                clearCondition();
+                setBirthYear(2000); setSido(''); setSigungu(''); setEmployment('');
+                setIncomePct(0); setEducation(''); setMarried(undefined);
+                setHomeless(undefined); setInterests([]); setSubmitted(false);
+              }}
+              className="text-[11px] text-muted hover:text-primary transition-colors shrink-0"
+            >
+              초기화
+            </button>
+          )}
+        </div>
       </Card>
 
       {/* 매칭 결과 */}
@@ -470,7 +545,30 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
                 ) : (
                   <>
                     <div className="space-y-2">
-                      {paged.map(p => <PolicyCard key={p.id} policy={p} />)}
+                      {paged.map(p => (
+                        <div key={p.id} className="relative">
+                          <PolicyCard policy={p} />
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setCompareIds(prev =>
+                                prev.includes(p.id)
+                                  ? prev.filter(x => x !== p.id)
+                                  : prev.length >= 3 ? prev : [...prev, p.id]
+                              );
+                            }}
+                            className={`absolute top-3 right-3 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] transition-all ${
+                              compareIds.includes(p.id)
+                                ? 'bg-primary border-primary text-white'
+                                : 'bg-white border-line text-muted hover:border-primary'
+                            }`}
+                            title="비교에 추가"
+                          >
+                            {compareIds.includes(p.id) ? '✓' : '+'}
+                          </button>
+                        </div>
+                      ))}
                     </div>
                     {hasMore && (
                       <button
@@ -491,6 +589,49 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
             );
           })()}
         </div>
+      )}
+
+      {/* 비교 플로팅 바 */}
+      {compareIds.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-line shadow-lg px-4 py-3 safe-bottom">
+          <div className="max-w-xl mx-auto flex items-center justify-between">
+            <p className="text-[13px] font-bold text-text">
+              {compareIds.length}개 정책 선택됨 <span className="text-muted font-normal">(최대 3개)</span>
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCompareIds([])}
+                className="px-3 py-1.5 text-[12px] font-semibold text-muted border border-line rounded-lg hover:text-text transition-colors"
+              >
+                초기화
+              </button>
+              <button
+                onClick={() => setShowCompare(true)}
+                disabled={compareIds.length < 2}
+                className={`px-4 py-1.5 text-[12px] font-bold rounded-lg transition-colors ${
+                  compareIds.length >= 2
+                    ? 'bg-primary text-white hover:bg-primary-d'
+                    : 'bg-line text-muted cursor-not-allowed'
+                }`}
+              >
+                비교하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 비교 모달 */}
+      {showCompare && (
+        <PolicyCompare
+          policies={compareIds.map(id => matchResults.find(p => p.id === id)!).filter(Boolean)}
+          onRemove={(id) => {
+            const next = compareIds.filter(x => x !== id);
+            setCompareIds(next);
+            if (next.length < 2) setShowCompare(false);
+          }}
+          onClose={() => setShowCompare(false)}
+        />
       )}
     </>
   );
