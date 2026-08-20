@@ -143,6 +143,8 @@ export default function MatchingForm({ policies }: { policies: Policy[] }) {
 
   const resetForm = () => {
     setSubmitted(false);
+    setListCat('전체');
+    setListPage(1);
   };
 
   return (

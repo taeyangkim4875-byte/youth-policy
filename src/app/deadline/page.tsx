@@ -10,17 +10,19 @@ export const metadata: Metadata = {
 
 export default async function DeadlinePage() {
   const policies = await fetchAllPolicies();
+  // KST 기준 오늘 0시
   const now = new Date();
-  now.setHours(0, 0, 0, 0);
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstToday = new Date(Math.floor((now.getTime() + kstOffset) / 86400000) * 86400000 - kstOffset);
 
   const urgent = policies
     .filter((p) => {
       if (p.status !== 'active' || !p.apply_end) return false;
-      const end = new Date(p.apply_end);
+      const end = new Date(p.apply_end + 'T23:59:59+09:00');
       return end >= now;
     })
     .map((p) => {
-      const diff = Math.ceil((new Date(p.apply_end!).getTime() - now.getTime()) / 86400000);
+      const diff = Math.ceil((new Date(p.apply_end! + 'T23:59:59+09:00').getTime() - now.getTime()) / 86400000);
       return { policy: p, daysLeft: diff };
     })
     .filter((x) => x.daysLeft <= 30)
