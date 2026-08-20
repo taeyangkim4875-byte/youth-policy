@@ -285,11 +285,48 @@ export async function GET(request: Request) {
       }
     }
 
+    // ── 마감된 정책 status → 'closed' 처리 ──
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+    const { data: expiredRows, error: expErr } = await supabaseAdmin
+      .from('policies')
+      .update({ status: 'closed' })
+      .eq('status', 'active')
+      .lt('apply_end', today)
+      .not('apply_end', 'is', null)
+      .select('id');
+    const expiredCount = expiredRows?.length ?? 0;
+    if (expErr) console.error('Expire update error:', expErr);
+
+    // ── API에서 사라진 정책 status → 'closed' 처리 ──
+    const fetchedApiIds = allPolicies.map((p) => p.plcyNo);
+    let orphanedCount = 0;
+    if (fetchedApiIds.length > 0) {
+      const { data: activeInDb } = await supabaseAdmin
+        .from('policies')
+        .select('id, api_id')
+        .eq('status', 'active');
+
+      if (activeInDb) {
+        const orphaned = activeInDb.filter((row) => !fetchedApiIds.includes(row.api_id));
+        if (orphaned.length > 0) {
+          const orphanIds = orphaned.map((r) => r.id);
+          const { error: orphErr } = await supabaseAdmin
+            .from('policies')
+            .update({ status: 'closed' })
+            .in('id', orphanIds);
+          if (orphErr) console.error('Orphan update error:', orphErr);
+          orphanedCount = orphaned.length;
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
       fetched: allPolicies.length,
       upserted,
       failed,
+      expired: expiredCount,
+      orphaned: orphanedCount,
       timestamp: new Date().toISOString(),
     });
   } catch (e) {
